@@ -12,6 +12,15 @@
 #include "memoryLocations.h"
 using namespace std;
 
+Register::Register(){
+
+    for (int i = 0; i < 32; i++)
+    {
+        this->setLocation(i, false);
+    }
+    
+}
+
 /**
  * @brief gets the 32 position loacation array
  * 
@@ -40,10 +49,10 @@ void Register::setLocation(int n, bool pos)
  * @param inputRegister 
  * @param reg 
  */
-void Store::setRegister(bool inputRegister[], int reg)
+void Register::setRegister(bool inputRegister[])
 {
     for (int i = 0; i < 32; i++)
     {
-        this->storeRegister[reg].setLocation(i, inputRegister[i]);
+       this->setLocation(i, inputRegister[i]);
     }
 }
