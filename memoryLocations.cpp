@@ -12,13 +12,17 @@
 #include "memoryLocations.h"
 using namespace std;
 
-Register::Register(){
+/**
+ * @brief Construct a new Register:: Register object
+ * 
+ */
+Register::Register()
+{
 
     for (int i = 0; i < 32; i++)
     {
         this->setLocation(i, false);
     }
-    
 }
 
 /**
@@ -29,7 +33,7 @@ Register::Register(){
  */
 bool Register::getLocation()
 {
-    return this->location;
+    return location;
 }
 
 /**
@@ -53,6 +57,24 @@ void Register::setRegister(bool inputRegister[])
 {
     for (int i = 0; i < 32; i++)
     {
-       this->setLocation(i, inputRegister[i]);
+        this->setLocation(i, inputRegister[i]);
     }
 }
+
+// ostream &operator<<(ostream &output, const Register &reg)
+// {
+//     //looping through each line in the array
+//     for (int i = 0; i < 32; i++)
+//     {
+//         if (reg[i].getLocation() == false)
+//         {
+//             output << " 0";
+//         }
+//         else
+//         {
+//             output << " 1";
+//         }
+//     }
+
+//     return output;
+// }
