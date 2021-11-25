@@ -32,7 +32,7 @@ private:
 
 public:
     Register();
-    bool getLocation();
+    bool getLocation(int x);
     void setLocation(int n, bool pos);
     void setRegister(bool inputRegister[]);
 };

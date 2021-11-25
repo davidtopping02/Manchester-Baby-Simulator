@@ -31,9 +31,9 @@ Register::Register()
  * @return true 
  * @return false 
  */
-bool Register::getLocation()
+bool Register::getLocation(int x)
 {
-    return location;
+    return location[x];
 }
 
 /**

@@ -10,6 +10,10 @@
  */
 
 #include <iostream>
+#include <bitset>
+#include <bits/stdc++.h>
+#include "main.h"
+#include "memoryLocations.h"
 using namespace std;
 
 #define SIZE = 32;
@@ -20,131 +24,174 @@ using namespace std;
  * @return ERROR
  */
 
-// int main()
-// {
+int main()
+{
+    //initialise local variables
+    bool finished = false;
+    int iteration = 0;
 
-//     Register CI;
-//     Register PI;
-//     Register Accumulator;
+    // declare registers
+    Register CI;
+    Register PI;
+    Register Accumulator;
 
-//     //1. Increment your CI REGISTER
-//     int increment_CI();
-//     //2. FETCH - CI points to storeage where instruction is fetched.
-//     int fetch();
-//     //3. Decode and fetch operands if needed.
-//     int decodeInstruction();
-//     int decode Operand();
-//     //4. Execute.
-//     void execute();
-//     void display_everything();
-//     //5. GO back to 1
-// }
+    //reading in the machine code
+    vector<Register> machineCode;
+    readInMachineCode(&machineCode);
 
-// /**
-//  * decodes instruction
-//  *
-//  * @param bool a, bool b, bool c
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
+    //running the fetch execute cycle
+    while (finished != true)
+    {
+        //Increment the CI REGISTER
+        increment_CI(&machineCode, &CI, iteration);
 
-// int decodeInstruction(bool a, bool b, bool c)
-// {
+        //2. FETCH - CI points to storeage where instruction is fetched.
 
-//     if (a == false && b == false && c == false)
-//     {
-//         //set CI CONTENT TO STORE LOCATION
-//         CI = S;
-//     }
-//     if (a == true && b == false && c == false)
-//     {
-//         //add content of Store location to CI
-//         CI = CI + S
-//     }
+        //3. Decode and fetch operands if needed.
 
-//     if (a == false && b == true && c == false)
-//     {
-//         //load Accumulator with negative form of Store content
-//         A = -S
-//     }
-//     if (a == true && b == true && c == false)
-//     {
-//         //copy Accumulator to STore location
-//         S = A
-//     }
-//     if (a == false && b == false && c == true)
-//     {
-//         //subtract content of STore Location from Accumulator
-//         A = A - S
-//     }
-//     if (a == true && b == false && c == true)
-//     {
-//         //as for 4
-//         A = A - S //?
-//     }
-//     if (a == false && b == true && c == true)
-//     {
-//         //increment CI if Accumulator value negative, otherwise do nothing
-//         if (A <)
-//         {
-//             CI = CI + 1
-//         }
-//     }
-//     if (a == true &&b = true && c == true)
-//     {
-//         //Halt Machine
-//     }
-// }
+        //4. Execute.
 
-// /**
-//  * @brief decode the operand
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
+        //5. GO back to 1
 
-// int decodeOperand()
-// {
-// }
+        iteration++;
+    }
+}
 
-// /**
-//  * @brief increment CI counter
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
+/**
+ * decodes instruction
+ *
+ * @param bool a, bool b, bool c
+ *
+ * @return SUCCESS
+ * @return ERROR
+ */
 
-// int increment_CI(){};
+int decodeInstruction(bool a, bool b, bool c)
+{
 
-// /**
-//  * @brief fetch instruction/operand from store
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
-// int fetch(){};
+    // if (a == false && b == false && c == false)
+    // {
+    //     //set CI CONTENT TO STORE LOCATION
+    //     CI = S;
+    // }
+    // if (a == true && b == false && c == false)
+    // {
+    //     //add content of Store location to CI
+    //     CI = CI + S
+    // }
 
-// /**
-//  * @brief execute based on instruction and operand
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
-// int execute(){};
+    // if (a == false && b == true && c == false)
+    // {
+    //     //load Accumulator with negative form of Store content
+    //     A = -S
+    // }
+    // if (a == true && b == true && c == false)
+    // {
+    //     //copy Accumulator to STore location
+    //     S = A
+    // }
+    // if (a == false && b == false && c == true)
+    // {
+    //     //subtract content of STore Location from Accumulator
+    //     A = A - S
+    // }
+    // if (a == true && b == false && c == true)
+    // {
+    //     //as for 4
+    //     A = A - S //?
+    // }
+    // if (a == false && b == true && c == true)
+    // {
+    //     //increment CI if Accumulator value negative, otherwise do nothing
+    //     if (A <)
+    //     {
+    //         CI = CI + 1
+    //     }
+    // }
+    // if (a == true &&b = true && c == true)
+    // {
+    //     //Halt Machine
+    // }
+}
 
-// /**
-//  * @brief display a register
-//  *
-//  * @return SUCCESS
-//  * @return ERROR
-//  */
-// int display_everything()
-// {
-//     //loop through the register and print every value
-//     for (int i = 0; i < SIZE; i++)
-//     {
+/**
+ * @brief decode the operand
+ *
+ * @return SUCCESS
+ * @return ERROR
+ */
+int decodeOperand()
+{
+}
 
-//         //loop through array and print
-//     }
-// };
+/**
+ * @brief increments CI register
+ * 
+ * @param machineCode 
+ * @param iteration 
+ */
+void increment_CI(vector<Register> *machineCode, Register *CI, int iteration)
+{
+    //iterating through the CI register
+    for (int i = 0; i < 32; i++)
+    {
+        CI->setLocation(i, machineCode->at(iteration).getLocation(i));
+    }
+};
+
+/**
+ * @brief fetch instruction/operand from store
+ *
+ * @return SUCCESS
+ * @return ERROR
+ */
+int fetch(){
+
+};
+
+/**
+ * @brief execute based on instruction and operand
+ *
+ * @return SUCCESS
+ * @return ERROR
+ */
+int execute(){
+
+};
+
+/**
+ * @brief Reads in the machine code text file and stores it in a vector of registers
+ * 
+ * @param machineCode 
+ */
+void readInMachineCode(vector<Register> *machineCode)
+{
+    // Create a text string, which is used to get each line
+    string line;
+
+    // Read from the text file
+    ifstream MyReadFile("BabyTest1-MC.txt");
+
+    // Use a while loop together with the getline() function to read the file line by line
+    while (getline(MyReadFile, line))
+    {
+        Register tempReg;
+
+        for (int i = 0; i < 32; i++)
+        {
+
+            if (line[i] == '0')
+            {
+                tempReg.setLocation(i, 0);
+            }
+            else if (line[i] == '1')
+            {
+                tempReg.setLocation(i, 1);
+            }
+        }
+        machineCode->push_back(tempReg);
+    }
+
+    // Close the file
+    MyReadFile.close();
+}
