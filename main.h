@@ -7,26 +7,39 @@
  * 
  * @copyright Copyright (c) 2021 
  */
+#ifndef MAIN_H
+#define MAIN_H
 
+#include <iostream>
+#include <bitset>
+#include <bits/stdc++.h>
+#include "main.h"
+#include "memoryLocations.h"
 using namespace std;
 
-//main function that houses the fetch-execute cycle
 int main();
 
-//decodes the intruction from the store
 int decodeInstruction(bool a, bool b, bool c);
 
-//decodes operand from the store
 int decodeOperand();
 
-//increments our CI register
-int increment_CI();
+/**
+ * @brief increments CI register
+ * 
+ * @param machineCode 
+ * @param iteration 
+ */
+void increment_CI(vector<Register> *machineCode, Register *CI, int iteration);
 
-//fetches relevant array from store
 int fetch();
 
-//executes the intstruction based on operands given
-void execute();
+int execute();
 
-//funciton to display a register
-int display_everything();
+/**
+ * @brief Reads in the machine code text file and stores it in a vector of registers
+ * 
+ * @param machineCode 
+ */
+void readInMachineCode(vector<Register> *machineCode);
+
+#endif //MAIN_H
