@@ -24,22 +24,32 @@ int decodeInstruction(bool a, bool b, bool c);
 int decodeOperand();
 
 /**
- * @brief increments CI register
+ * @brief Increments the CI register by one 
  * 
- * @param machineCode 
- * @param iteration 
+ * @param CI 
  */
-void increment_CI(vector<Register> *machineCode, Register *CI, int iteration);
+void increment_CI(Register *CI);
+
+/**
+ * @brief this method increments a bitset by one, credit is given for inspiration to this function
+ * 
+ * @author https://stackoverflow.com/questions/16761472/how-can-i-increment-stdbitset
+ * @tparam N 
+ * @param in 
+ * @return std::bitset<N> 
+ */
+template <size_t N>
+std::bitset<N> increment(bitset<N> in);
 
 int fetch();
 
 int execute();
 
 /**
- * @brief Reads in the machine code text file and stores it in a vector of registers
+ * @brief Reads in the machine code text file and puts all instructions in the store
  * 
  * @param machineCode 
  */
-void readInMachineCode(vector<Register> *machineCode);
+void readInMachineCode(Store *theStore);
 
 #endif //MAIN_H

@@ -35,6 +35,7 @@ public:
     bool getLocation(int x);
     void setLocation(int n, bool pos);
     void setRegister(bool inputRegister[]);
+    bool getRegister();
 };
 
 /**
@@ -47,6 +48,9 @@ private:
     Register storeRegister[32];
 
 public:
+    Register getRegister(int i);
+    bool setRegiserLocation(int reg, int regLocation, bool pos);
+    bool getRegisterLocation(int reg, int loc);
 };
 
 #endif //MEMORY_LOCATIONS_H
