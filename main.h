@@ -41,7 +41,7 @@ void increment_CI(Register *CI);
 template <size_t N>
 std::bitset<N> increment(bitset<N> in);
 
-int fetch();
+void fetch(Register *CI, Register *PI, Store *theStore);
 
 int execute();
 
