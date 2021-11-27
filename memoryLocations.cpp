@@ -61,20 +61,41 @@ void Register::setRegister(bool inputRegister[])
     }
 }
 
-// ostream &operator<<(ostream &output, const Register &reg)
-// {
-//     //looping through each line in the array
-//     for (int i = 0; i < 32; i++)
-//     {
-//         if (reg[i].getLocation() == false)
-//         {
-//             output << " 0";
-//         }
-//         else
-//         {
-//             output << " 1";
-//         }
-//     }
+/**
+ * @brief gets the bool array
+ * 
+ * @return true 
+ * @return false 
+ */
+bool Register::getRegister()
+{
+    return this->location;
+}
 
-//     return output;
-// }
+/**
+ * @brief sets a specific memory location in the store to be on or off
+ * 
+ * @param reg 
+ * @param regLocation 
+ * @param pos 
+ * @return true 
+ * @return false 
+ */
+bool Store::setRegiserLocation(int reg, int regLocation, bool pos)
+{
+    this->storeRegister[reg].setLocation(regLocation, pos);
+
+    if (this->storeRegister[reg].getLocation(regLocation) == pos)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+bool Store::getRegisterLocation(int reg, int loc)
+{
+    return this->storeRegister[reg].getLocation(loc);
+}

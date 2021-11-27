@@ -10,8 +10,7 @@
  */
 
 #include <iostream>
-#include <bitset>
-#include <bits/stdc++.h>
+#include <cstdint>
 #include "main.h"
 #include "memoryLocations.h"
 using namespace std;
@@ -30,22 +29,22 @@ int main()
     bool finished = false;
     int iteration = 0;
 
-    // declare registers
+    // declare memory locations
+    Store theStore;
     Register CI;
     Register PI;
     Register Accumulator;
 
     //reading in the machine code
-    vector<Register> machineCode;
-    readInMachineCode(&machineCode);
+    readInMachineCode(&theStore);
 
     //running the fetch execute cycle
     while (finished != true)
     {
         //Increment the CI REGISTER
-        increment_CI(&machineCode, &CI, iteration);
+        increment_CI(&CI);
 
-        //2. FETCH - CI points to storeage where instruction is fetched.
+        //2. Fetch - CI points to storeage where instruction is fetched.
 
         //3. Decode and fetch operands if needed.
 
@@ -125,19 +124,69 @@ int decodeOperand()
 }
 
 /**
- * @brief increments CI register
+ * @brief Increments the CI register by one 
  * 
- * @param machineCode 
- * @param iteration 
+ * @param CI 
  */
-void increment_CI(vector<Register> *machineCode, Register *CI, int iteration)
+void increment_CI(Register *CI)
 {
-    //iterating through the CI register
+    //creating bitset from CI register
+    bitset<32> ciBitset;
+
+    //copying the CI register into the bitset
     for (int i = 0; i < 32; i++)
     {
-        CI->setLocation(i, machineCode->at(iteration).getLocation(i));
+        if (CI->getLocation(i) == 1)
+        {
+            ciBitset[i] = 1;
+        }
+        else
+        {
+            ciBitset[i] = 0;
+        }
+    }
+
+    //helper function to increment the bitest
+    ciBitset = increment(ciBitset);
+
+    //copying the bitset into the CI register
+    string ciStr = ciBitset.to_string();
+    for (int i = 0; i < 32; i++)
+    {
+        if (ciStr[31 - i] == '1')
+        {
+            CI->setLocation(i, 1);
+        }
+        else
+        {
+            CI->setLocation(i, 0);
+        }
     }
 };
+
+/**
+ * @brief this method increments a bitset by one, credit is given for inspiration to this function
+ * 
+ * @author https://stackoverflow.com/questions/16761472/how-can-i-increment-stdbitset
+ * @tparam N 
+ * @param in 
+ * @return std::bitset<N> 
+ */
+template <size_t N>
+std::bitset<N> increment(std::bitset<N> in)
+{
+    //  add 1 to each value, and if it was 1 already, carry the 1 to the next.
+    for (size_t i = 0; i < N; ++i)
+    {
+        if (in[i] == 0)
+        { // There will be no carry
+            in[i] = 1;
+            break;
+        }
+        in[i] = 0; // This entry was 1; set to zero and carry the 1
+    }
+    return in;
+}
 
 /**
  * @brief fetch instruction/operand from store
@@ -164,10 +213,11 @@ int execute(){
  * 
  * @param machineCode 
  */
-void readInMachineCode(vector<Register> *machineCode)
+void readInMachineCode(Store *theStore)
 {
     // Create a text string, which is used to get each line
     string line;
+    int storeReg = 0;
 
     // Read from the text file
     ifstream MyReadFile("BabyTest1-MC.txt");
@@ -175,21 +225,19 @@ void readInMachineCode(vector<Register> *machineCode)
     // Use a while loop together with the getline() function to read the file line by line
     while (getline(MyReadFile, line))
     {
-        Register tempReg;
-
         for (int i = 0; i < 32; i++)
         {
 
             if (line[i] == '0')
             {
-                tempReg.setLocation(i, 0);
+                theStore->setRegiserLocation(storeReg, i, 0);
             }
             else if (line[i] == '1')
             {
-                tempReg.setLocation(i, 1);
+                theStore->setRegiserLocation(storeReg, i, 1);
             }
         }
-        machineCode->push_back(tempReg);
+        storeReg++;
     }
 
     // Close the file
