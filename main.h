@@ -19,9 +19,28 @@ using namespace std;
 
 int main();
 
-int decodeInstruction(bool a, bool b, bool c);
+/**
+ * @brief wrapper function to decode the operand and the opcode
+ * 
+ * @param CI 
+ */
+void decode(Register *CI, string *opcode, int *operand);
 
-int decodeOperand();
+/**
+ * @brief decode the operand
+ *
+ * @param register
+ * @return operand
+ */
+int decodeOperand(Register *PI);
+
+/**
+ * @brief decode the instruction
+ *
+ * @param register
+ * @return instruction value
+ */
+string decodeOpcode(Register *PI);
 
 /**
  * @brief Increments the CI register by one 

@@ -29,6 +29,10 @@ int main()
     bool finished = false;
     int iteration = 0;
 
+    //opcode and operand
+    int operand;
+    string opcode;
+
     // declare memory locations
     Store theStore;
     Register CI;
@@ -38,6 +42,9 @@ int main()
     //reading in the machine code
     readInMachineCode(&theStore);
 
+    //temporary tester integers
+    int test1 = 0;
+    int test2 = 0;
     //running the fetch execute cycle
     while (finished != true)
     {
@@ -48,9 +55,15 @@ int main()
         fetch(&CI, &PI, &theStore);
 
         //3. Decode and fetch operands if needed.
-        decodePI(&PI);
+        decode(&PI, &opcode, &operand);
 
         //4. Execute.
+
+        //halting if the opcode is STP
+        if (opcode == "STP")
+        {
+            finished = true;
+        }
 
         iteration++;
     }
@@ -156,70 +169,96 @@ void fetch(Register *CI, Register *PI, Store *theStore)
     }
 };
 
-int decodePI(Register *PI)
+/**
+ * @brief wrapper function to decode the operand and the opcode
+ * 
+ * @param CI 
+ */
+void decode(Register *CI, string *opcode, int *operand)
 {
+    //storing the opcode and operand in the pointers'variable
+    *operand = decodeOperand(CI);
+    *opcode = decodeOpcode(CI);
 
-    // if (a == false && b == false && c == false)
-    // {
-    //     //set CI CONTENT TO STORE LOCATION
-    //     CI = S;
-    // }
-    // if (a == true && b == false && c == false)
-    // {
-    //     //add content of Store location to CI
-    //     CI = CI + S
-    // }
-
-    // if (a == false && b == true && c == false)
-    // {
-    //     //load Accumulator with negative form of Store content
-    //     A = -S
-    // }
-    // if (a == true && b == true && c == false)
-    // {
-    //     //copy Accumulator to STore location
-    //     S = A
-    // }
-    // if (a == false && b == false && c == true)
-    // {
-    //     //subtract content of STore Location from Accumulator
-    //     A = A - S
-    // }
-    // if (a == true && b == false && c == true)
-    // {
-    //     //as for 4
-    //     A = A - S //?
-    // }
-    // if (a == false && b == true && c == true)
-    // {
-    //     //increment CI if Accumulator value negative, otherwise do nothing
-    //     if (A <)
-    //     {
-    //         CI = CI + 1
-    //     }
-    // }
-    // if (a == true &&b = true && c == true)
-    // {
-    //     //Halt Machine
-    // }
+    //PRINTING FOR TESTING
+    cout << "\nOperand: " << *operand << endl;
+    cout << "Opcode: " << *opcode << endl;
 }
 
 /**
  * @brief decode the operand
  *
- * @return SUCCESS
- * @return ERROR
+ * @param register
+ * @return operand
  */
-int decodeOperand()
+int decodeOperand(Register *PI)
 {
+    int operand = 0;
+
+    for (int j = 0; j < 13; j++)
+    {
+        //computes MyNum by iterating through the register
+        operand += PI->getLocation(j) * pow(2, j);
+    }
+
+    return operand;
 }
 
 /**
- * @brief execute based on instruction and operand
+ * @brief decode the instruction
  *
- * @return SUCCESS
- * @return ERROR
+ * @param register
+ * @return instruction value
  */
+string decodeOpcode(Register *PI)
+{
+    //getting the opcode from the 13th,14th,15th position of the present instruction register
+    bool a = PI->getLocation(13);
+    bool b = PI->getLocation(14);
+    bool c = PI->getLocation(15);
+
+    //compares bool code and returns
+    if (a == 0 && b == 0 && c == 0)
+    {
+        return "JMP";
+    }
+    if (a == 1 && b == 0 && c == 0)
+    {
+        return "JRP";
+    }
+
+    if (a == 0 && b == 1 && c == 0)
+    {
+        return "LDN";
+    }
+
+    if (a == 1 && b == 1 && c == 0)
+    {
+        return "STO";
+    }
+
+    if (a == 0 && b == 0 && c == 1)
+    {
+        return "SUB";
+    }
+
+    if (a == 1 && b == 0 && c == 1)
+    {
+        return "SUB";
+    }
+    if (a == 0 && b == 1 && c == 1)
+    {
+        return "CMP";
+    }
+    if (a == 1 && b == 1 && c == 1)
+    {
+        return "STP";
+    }
+
+    //error code if failure
+    return "ERR";
+}
+
 int execute(){
 
 };
