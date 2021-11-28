@@ -42,9 +42,6 @@ int main()
     //reading in the machine code
     readInMachineCode(&theStore);
 
-    //temporary tester integers
-    int test1 = 0;
-    int test2 = 0;
     //running the fetch execute cycle
     while (finished != true)
     {
@@ -92,7 +89,7 @@ void increment_CI(Register *CI)
         }
     }
 
-    //helper function to increment the bitest
+    //helper function to increment the biset
     ciBitset = increment(ciBitset);
 
     //copying the bitset into the CI register
