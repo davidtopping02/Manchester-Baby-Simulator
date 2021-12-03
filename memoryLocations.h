@@ -52,8 +52,8 @@ public:
     bool setRegiserLocation(int reg, int regLocation, bool pos);
     bool getRegisterLocation(int reg, int loc);
     
-    friend ostream& operator<<(ostream &output, const Register &Reg); 
-    friend ostream& operator<<(ostream &outupt, const Store &St);
+    friend ostream& operator<<(std::ostream &output, const Register &Reg); 
+    friend ostream& operator<<(std::ostream &outupt, const Store &St);
 
 };
 
