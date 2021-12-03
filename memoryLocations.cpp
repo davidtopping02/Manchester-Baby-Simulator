@@ -99,3 +99,26 @@ bool Store::getRegisterLocation(int reg, int loc)
 {
     return this->storeRegister[reg].getLocation(loc);
 }
+
+ostream& operator<<(ostream &output, const Register &Reg){
+
+        for(int i = 0; i < 32; i++){
+                output << Reg.getLocation(i) <<"," << endl;             
+
+        }
+        return output;
+}
+
+ostream& operator<<(ostream &outupt, const Store &St){
+
+        
+        for(int j = 0; j < 32; j++){
+                for (int i = 0; i < 32; i++){ 
+                //there is an error here
+                bool myBool = St.getRegisterLocation(j, i);   
+                output << myBool << "," << endl;
+                }
+                output << endl;
+        }
+        return output;
+} 
