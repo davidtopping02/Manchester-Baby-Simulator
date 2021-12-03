@@ -51,6 +51,10 @@ public:
     Register getRegister(int i);
     bool setRegiserLocation(int reg, int regLocation, bool pos);
     bool getRegisterLocation(int reg, int loc);
+    
+    friend ostream& operator<<(ostream &output, const Register &Reg); 
+    friend ostream& operator<<(ostream &outupt, const Store &St);
+
 };
 
 #endif //MEMORY_LOCATIONS_H
