@@ -27,9 +27,9 @@ int main()
 {
     // initialise local variables
     bool finished = false;
-    int iteration = 0;
+    int iteration = 1;
 
-    // opcode and operand
+    // init opcode and operand
     int operand;
     string opcode;
 
@@ -46,16 +46,19 @@ int main()
     while (finished != true)
     {
         // Increment the CI REGISTER
-        increment_CI(&CI);
+        incrementRegister(&CI);
 
-        // 2. Fetch - CI points to store where instruction is fetched.
+        // 2. Fetch
         fetch(&CI, &PI, &theStore);
 
-        // 3. Decode and fetch operands if needed.
+        // 3. Decode opcode and operand
         decode(&PI, &opcode, &operand);
 
         // 4. Execute.
         execute(&opcode, &operand, &CI, &PI, &Accumulator);
+
+        // printing all memory locations
+        printMemoryLocations(&CI, &PI, &Accumulator, &theStore);
 
         // halting if the opcode is STP
         if (opcode == "STP")
@@ -68,11 +71,47 @@ int main()
 }
 
 /**
- * @brief Increments the CI register by one
+ * @brief Reads in the machine code text file and stores it in a vector of registers
+ *
+ * @param machineCode
+ */
+void readInMachineCode(Store *theStore)
+{
+    // Create a text string, which is used to get each line
+    string line;
+    int storeReg = 0;
+
+    // Read from the text file
+    ifstream MyReadFile("BabyTest1-MC.txt");
+
+    // Use a while loop together with the getline() function to read the file line by line
+    while (getline(MyReadFile, line))
+    {
+        for (int i = 0; i < 32; i++)
+        {
+
+            if (line[i] == '0')
+            {
+                theStore->setRegiserLocation(storeReg, i, 0);
+            }
+            else if (line[i] == '1')
+            {
+                theStore->setRegiserLocation(storeReg, i, 1);
+            }
+        }
+        storeReg++;
+    }
+
+    // Close the file
+    MyReadFile.close();
+}
+
+/**
+ * @brief Increments a register by one
  *
  * @param CI
  */
-void increment_CI(Register *CI)
+void incrementRegister(Register *CI)
 {
     // creating bitset from CI register
     bitset<32> ciBitset;
@@ -133,10 +172,11 @@ std::bitset<N> increment(std::bitset<N> in)
 }
 
 /**
- * @brief fetch PI from store depending on CI
+ * @brief Fetches the PI from the store based on the PI
  *
- * @return SUCCESS
- * @return ERROR
+ * @param CI
+ * @param PI
+ * @param theStore
  */
 void fetch(Register *CI, Register *PI, Store *theStore)
 {
@@ -177,10 +217,6 @@ void decode(Register *CI, string *opcode, int *operand)
     // storing the opcode and operand in the pointers'variable
     *operand = decodeOperand(CI);
     *opcode = decodeOpcode(CI);
-
-    // PRINTING FOR TESTING
-    cout << "\nOperand: " << *operand << endl;
-    cout << "Opcode: " << *opcode << endl;
 }
 
 /**
@@ -257,6 +293,15 @@ string decodeOpcode(Register *PI)
     return "ERR";
 }
 
+/**
+ * @brief Executing the PI
+ *
+ * @param opcode
+ * @param operand
+ * @param CI
+ * @param PI
+ * @param Accumulator
+ */
 void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator)
 {
 
@@ -268,7 +313,6 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     // relative jump
     if (*opcode == "JRP")
     {
-        cout << "true 2" << endl;
 
         int counter = 0;
 
@@ -309,65 +353,47 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     // store to memory
     if (*opcode == "STO")
     {
-        cout << "true 4" << endl;
     }
 
     // Subtract from accumulator
     if (*opcode == "SUB")
     {
-        cout << "true 5" << endl;
     }
 
     if (*opcode == "SUB")
     {
-        cout << "true 6" << endl;
     }
 
     // Skip next instuction if accumulator is negaive
     if (*opcode == "CMP")
     {
-        cout << "true 7" << endl;
     }
 
     // halts execution
     if (*opcode == "STP")
     {
-        cout << "true 8" << endl;
     }
 };
 
 /**
- * @brief Reads in the machine code text file and stores it in a vector of registers
+ * @brief Helper function prints all the memory locations
  *
- * @param machineCode
+ * @param CI
+ * @param PI
+ * @param Accumulator
+ * @param theStore
  */
-void readInMachineCode(Store *theStore)
+void printMemoryLocations(Register *CI, Register *PI, Register *Accumulator, Store *theStore)
 {
-    // Create a text string, which is used to get each line
-    string line;
-    int storeReg = 0;
+    cout << "The CI:" << endl;
+    cout << *CI << endl;
 
-    // Read from the text file
-    ifstream MyReadFile("BabyTest1-MC.txt");
+    cout << "The PI:" << endl;
+    cout << *PI << endl;
 
-    // Use a while loop together with the getline() function to read the file line by line
-    while (getline(MyReadFile, line))
-    {
-        for (int i = 0; i < 32; i++)
-        {
+    cout << "The Accumulator:" << endl;
+    cout << *Accumulator << endl;
 
-            if (line[i] == '0')
-            {
-                theStore->setRegiserLocation(storeReg, i, 0);
-            }
-            else if (line[i] == '1')
-            {
-                theStore->setRegiserLocation(storeReg, i, 1);
-            }
-        }
-        storeReg++;
-    }
-
-    // Close the file
-    MyReadFile.close();
+    cout << "The Store:" << endl;
+    cout << *theStore << endl;
 }

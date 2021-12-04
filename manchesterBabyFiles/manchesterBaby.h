@@ -17,6 +17,40 @@
 using namespace std;
 
 /**
+ * @brief Reads in the machine code text file and puts all instructions in the store
+ *
+ * @param machineCode
+ */
+void readInMachineCode(Store *theStore);
+
+/**
+ * @brief Increments a register by one
+ *
+ * @param CI
+ */
+void incrementRegister(Register *CI);
+
+/**
+ * @brief this method increments a bitset by one, credit is given for inspiration to this function
+ *
+ * @author https://stackoverflow.com/questions/16761472/how-can-i-increment-stdbitset
+ * @tparam N
+ * @param in
+ * @return std::bitset<N>
+ */
+template <size_t N>
+std::bitset<N> increment(bitset<N> in);
+
+/**
+ * @brief Fetches the PI from the store based on the PI
+ *
+ * @param CI
+ * @param PI
+ * @param theStore
+ */
+void fetch(Register *CI, Register *PI, Store *theStore);
+
+/**
  * @brief wrapper function to decode the operand and the opcode
  *
  * @param CI
@@ -40,32 +74,24 @@ int decodeOperand(Register *PI);
 string decodeOpcode(Register *PI);
 
 /**
- * @brief Increments the CI register by one
+ * @brief Executing the PI
  *
+ * @param opcode
+ * @param operand
  * @param CI
+ * @param PI
+ * @param Accumulator
  */
-void increment_CI(Register *CI);
-
-/**
- * @brief this method increments a bitset by one, credit is given for inspiration to this function
- *
- * @author https://stackoverflow.com/questions/16761472/how-can-i-increment-stdbitset
- * @tparam N
- * @param in
- * @return std::bitset<N>
- */
-template <size_t N>
-std::bitset<N> increment(bitset<N> in);
-
-void fetch(Register *CI, Register *PI, Store *theStore);
-
 void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator);
 
 /**
- * @brief Reads in the machine code text file and puts all instructions in the store
+ * @brief Helper function prints all the memory locations
  *
- * @param machineCode
+ * @param CI
+ * @param PI
+ * @param Accumulator
+ * @param theStore
  */
-void readInMachineCode(Store *theStore);
+void printMemoryLocations(Register *CI, Register *PI, Register *Accumulator, Store *theStore);
 
 #endif // MAIN_H
