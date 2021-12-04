@@ -32,10 +32,12 @@ private:
 
 public:
     Register();
-    bool getLocation(int x);
+    bool getLocation(int x) const;
     void setLocation(int n, bool pos);
     void setRegister(bool inputRegister[]);
     bool getRegister();
+    
+     friend std::ostream& operator<<(std::ostream &output, const Register &Reg); 
 };
 
 /**
@@ -50,10 +52,9 @@ private:
 public:
     Register getRegister(int i);
     bool setRegiserLocation(int reg, int regLocation, bool pos);
-    bool getRegisterLocation(int reg, int loc);
-    
-    friend ostream& operator<<(std::ostream &output, const Register &Reg); 
-    friend ostream& operator<<(std::ostream &outupt, const Store &St);
+    bool getRegisterLocation(int reg, int loc) const;
+   
+    friend std::ostream& operator<<(std::ostream &outupt, const Store &St);
 
 };
 
