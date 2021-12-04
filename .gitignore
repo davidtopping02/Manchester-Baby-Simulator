@@ -1,0 +1,7 @@
+.vscode
+main
+*.o
+simulator
+assembler
+assemblerTest
+machineCode.txt
