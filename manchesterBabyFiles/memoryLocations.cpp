@@ -1,12 +1,12 @@
 /**
  * @file memoryLocations.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief register class that has an array representing a 32 bit memory storage 
+ * @brief register class that has an array representing a 32 bit memory storage
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 #include <iostream>
 #include "memoryLocations.h"
@@ -14,7 +14,7 @@ using namespace std;
 
 /**
  * @brief Construct a new Register:: Register object
- * 
+ *
  */
 Register::Register()
 {
@@ -27,20 +27,20 @@ Register::Register()
 
 /**
  * @brief gets the 32 position loacation array
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
-bool Register::getLocation(int x)
+bool Register::getLocation(int x) const
 {
     return location[x];
 }
 
 /**
  * @brief sets an value 'true(1) or false(0)' for an indivual memory location
- * 
- * @param n 
- * @param pos 
+ *
+ * @param n
+ * @param pos
  */
 void Register::setLocation(int n, bool pos)
 {
@@ -49,9 +49,9 @@ void Register::setLocation(int n, bool pos)
 
 /**
  * @brief copys a full register into the specified store location
- * 
- * @param inputRegister 
- * @param reg 
+ *
+ * @param inputRegister
+ * @param reg
  */
 void Register::setRegister(bool inputRegister[])
 {
@@ -63,9 +63,9 @@ void Register::setRegister(bool inputRegister[])
 
 /**
  * @brief gets the bool array
- * 
- * @return true 
- * @return false 
+ *
+ * @return true
+ * @return false
  */
 bool Register::getRegister()
 {
@@ -74,12 +74,12 @@ bool Register::getRegister()
 
 /**
  * @brief sets a specific memory location in the store to be on or off
- * 
- * @param reg 
- * @param regLocation 
- * @param pos 
- * @return true 
- * @return false 
+ *
+ * @param reg
+ * @param regLocation
+ * @param pos
+ * @return true
+ * @return false
  */
 bool Store::setRegiserLocation(int reg, int regLocation, bool pos)
 {
@@ -95,7 +95,56 @@ bool Store::setRegiserLocation(int reg, int regLocation, bool pos)
     }
 }
 
-bool Store::getRegisterLocation(int reg, int loc)
+/**
+ * @brief returns a constant to the register location
+ *
+ * @param reg
+ * @param loc
+ * @return true
+ * @return false
+ */
+bool Store::getRegisterLocation(int reg, int loc) const
 {
     return this->storeRegister[reg].getLocation(loc);
+}
+
+/**
+ * @brief Overloads the '<<' operator for a register object
+ *
+ * @param output
+ * @param Reg
+ * @return ostream&
+ */
+ostream &operator<<(ostream &output, const Register &reg)
+{
+
+    for (int i = 0; i < 32; i++)
+    {
+        output << reg.getLocation(i);
+    }
+    output << endl;
+    return output;
+}
+
+/**
+ * @brief Overloads the '<<' operator for a Store object
+ *
+ * @param output
+ * @param St
+ * @return ostream&
+ */
+ostream &operator<<(ostream &output, const Store &St)
+{
+
+    for (int j = 0; j < 32; j++)
+    {
+        for (int i = 0; i < 32; i++)
+        {
+            // there is an error here
+            bool myBool = St.getRegisterLocation(j, i);
+            output << myBool;
+        }
+        output << endl;
+    }
+    return output;
 }
