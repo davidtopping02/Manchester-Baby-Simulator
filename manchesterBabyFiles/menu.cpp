@@ -4,21 +4,21 @@
  * @brief This file holds the user menu for the manchester baby
  * @version 0.1
  * @date 2021-11-29
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 #include <iostream>
-#include "main.h"
+#include "manchesterBaby.h"
 #include "memoryLocations.h"
 using namespace std;
 
 void menu()
 {
-    //init local variables
+    // init local variables
     int choice;
 
-    //menu choices
+    // menu choices
     cout << "Please select from one of the following options" << endl;
 
     cout << "0. Exit" << endl;
@@ -43,14 +43,14 @@ void menu()
 
     } while (choice < 0 || choice > 5);
 
-    //switch for the menu options
+    // switch for the menu options
     switch (choice)
     {
     case 0:
         cout << "Thank you for using the Manchester Baby simulator" << endl;
         cout << "exiting..." << endl;
 
-        //exit command
+        // exit command
         exit(EXIT_SUCCESS);
         break;
     case 1:

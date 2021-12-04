@@ -1,35 +1,35 @@
 /**
  * @file main.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief file with main function and other relevant functions 
+ * @brief file with main function and other relevant functions
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include <iostream>
 #include <cstdint>
-#include "main.h"
+#include "manchesterBaby.h"
 #include "memoryLocations.h"
 using namespace std;
 
 #define SIZE = 32;
 /**
  * @brief main method
- * 
+ *
  * @return SUCCESS
  * @return ERROR
  */
 
 int main()
 {
-    //initialise local variables
+    // initialise local variables
     bool finished = false;
     int iteration = 0;
 
-    //opcode and operand
+    // opcode and operand
     int operand;
     string opcode;
 
@@ -39,24 +39,25 @@ int main()
     Register PI;
     Register Accumulator;
 
-    //reading in the machine code
+    // reading in the machine code
     readInMachineCode(&theStore);
 
-    //running the fetch execute cycle
+    // running the fetch execute cycle
     while (finished != true)
     {
-        //Increment the CI REGISTER
+        // Increment the CI REGISTER
         increment_CI(&CI);
 
-        //2. Fetch - CI points to store where instruction is fetched.
+        // 2. Fetch - CI points to store where instruction is fetched.
         fetch(&CI, &PI, &theStore);
 
-        //3. Decode and fetch operands if needed.
+        // 3. Decode and fetch operands if needed.
         decode(&PI, &opcode, &operand);
 
-        //4. Execute.
+        // 4. Execute.
+        execute(&opcode, &operand, &CI, &PI, &Accumulator);
 
-        //halting if the opcode is STP
+        // halting if the opcode is STP
         if (opcode == "STP")
         {
             finished = true;
@@ -67,16 +68,16 @@ int main()
 }
 
 /**
- * @brief Increments the CI register by one 
- * 
- * @param CI 
+ * @brief Increments the CI register by one
+ *
+ * @param CI
  */
 void increment_CI(Register *CI)
 {
-    //creating bitset from CI register
+    // creating bitset from CI register
     bitset<32> ciBitset;
 
-    //copying the CI register into the bitset
+    // copying the CI register into the bitset
     for (int i = 0; i < 32; i++)
     {
         if (CI->getLocation(i) == 1)
@@ -89,10 +90,10 @@ void increment_CI(Register *CI)
         }
     }
 
-    //helper function to increment the biset
+    // helper function to increment the biset
     ciBitset = increment(ciBitset);
 
-    //copying the bitset into the CI register
+    // copying the bitset into the CI register
     string ciStr = ciBitset.to_string();
     for (int i = 0; i < 32; i++)
     {
@@ -109,11 +110,11 @@ void increment_CI(Register *CI)
 
 /**
  * @brief this method increments a bitset by one, credit is given for inspiration to this function
- * 
+ *
  * @author https://stackoverflow.com/questions/16761472/how-can-i-increment-stdbitset
- * @tparam N 
- * @param in 
- * @return std::bitset<N> 
+ * @tparam N
+ * @param in
+ * @return std::bitset<N>
  */
 template <size_t N>
 std::bitset<N> increment(std::bitset<N> in)
@@ -140,7 +141,7 @@ std::bitset<N> increment(std::bitset<N> in)
 void fetch(Register *CI, Register *PI, Store *theStore)
 {
 
-    //convert the CI to an int
+    // convert the CI to an int
     int storeLocation = 0;
 
     for (int i = 0; i < 32; i++)
@@ -151,7 +152,7 @@ void fetch(Register *CI, Register *PI, Store *theStore)
         }
     }
 
-    //get the array register from the store location based on the CI
+    // get the array register from the store location based on the CI
     bool tempPi[32];
 
     for (int i = 0; i < 32; i++)
@@ -168,16 +169,16 @@ void fetch(Register *CI, Register *PI, Store *theStore)
 
 /**
  * @brief wrapper function to decode the operand and the opcode
- * 
- * @param CI 
+ *
+ * @param CI
  */
 void decode(Register *CI, string *opcode, int *operand)
 {
-    //storing the opcode and operand in the pointers'variable
+    // storing the opcode and operand in the pointers'variable
     *operand = decodeOperand(CI);
     *opcode = decodeOpcode(CI);
 
-    //PRINTING FOR TESTING
+    // PRINTING FOR TESTING
     cout << "\nOperand: " << *operand << endl;
     cout << "Opcode: " << *opcode << endl;
 }
@@ -194,7 +195,7 @@ int decodeOperand(Register *PI)
 
     for (int j = 0; j < 13; j++)
     {
-        //computes MyNum by iterating through the register
+        // computes MyNum by iterating through the register
         operand += PI->getLocation(j) * pow(2, j);
     }
 
@@ -209,12 +210,12 @@ int decodeOperand(Register *PI)
  */
 string decodeOpcode(Register *PI)
 {
-    //getting the opcode from the 13th,14th,15th position of the present instruction register
+    // getting the opcode from the 13th,14th,15th position of the present instruction register
     bool a = PI->getLocation(13);
     bool b = PI->getLocation(14);
     bool c = PI->getLocation(15);
 
-    //compares bool code and returns
+    // compares bool code and returns
     if (a == 0 && b == 0 && c == 0)
     {
         return "JMP";
@@ -252,18 +253,93 @@ string decodeOpcode(Register *PI)
         return "STP";
     }
 
-    //error code if failure
+    // error code if failure
     return "ERR";
 }
 
-int execute(){
+void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator)
+{
 
+    // indirect jump
+    if (*opcode == "JMP")
+    {
+    }
+
+    // relative jump
+    if (*opcode == "JRP")
+    {
+        cout << "true 2" << endl;
+
+        int counter = 0;
+
+        for (int i = 0; i < 32; i++)
+        {
+            if (CI->getLocation(i) == 1)
+            {
+                counter += pow(2, i);
+            }
+        }
+
+        int newCI = counter + *operand;
+
+        int newCIarray[32];
+
+        for (int i = 0; i < 32; i++)
+        {
+            newCIarray[i] = newCI % 2;
+            newCI = newCI / 2;
+        }
+        for (int i; i < 32; i++)
+        {
+            if (newCIarray[31 - i] == '1')
+            {
+                CI->setLocation(i, 1);
+            }
+            else
+            {
+                CI->setLocation(i, 0);
+            }
+        }
+    }
+
+    // Negative Load
+    if (*opcode == "LDN")
+    {
+    }
+    // store to memory
+    if (*opcode == "STO")
+    {
+        cout << "true 4" << endl;
+    }
+
+    // Subtract from accumulator
+    if (*opcode == "SUB")
+    {
+        cout << "true 5" << endl;
+    }
+
+    if (*opcode == "SUB")
+    {
+        cout << "true 6" << endl;
+    }
+
+    // Skip next instuction if accumulator is negaive
+    if (*opcode == "CMP")
+    {
+        cout << "true 7" << endl;
+    }
+
+    // halts execution
+    if (*opcode == "STP")
+    {
+        cout << "true 8" << endl;
+    }
 };
 
 /**
  * @brief Reads in the machine code text file and stores it in a vector of registers
- * 
- * @param machineCode 
+ *
+ * @param machineCode
  */
 void readInMachineCode(Store *theStore)
 {
