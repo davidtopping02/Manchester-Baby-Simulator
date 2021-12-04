@@ -31,7 +31,7 @@ Register::Register()
  * @return true 
  * @return false 
  */
-bool Register::getLocation(int x)
+bool Register::getLocation(int x) const
 {
     return location[x];
 }
@@ -100,23 +100,36 @@ bool Store::getRegisterLocation(int reg, int loc)
     return this->storeRegister[reg].getLocation(loc);
 }
 
+/**
+ * @brief Overloads << operator for Registers to print the entire register
+ * 
+ * @param Register 
+ * @return output
+ */
 ostream& operator<<(ostream &output, const Register &Reg){
 
         for(int i = 0; i < 32; i++){
-                output << Reg.getLocation(i) <<"," << endl;             
+                output << Reg.getLocation(i) <<",";             
 
         }
+        output << endl;
         return output;
 }
 
+/**
+ * @brief Overloads << operator for Stores to print the entire store
+ * 
+ * @param Store
+ * @return output
+ */
 ostream& operator<<(ostream &outupt, const Store &St){
 
         
         for(int j = 0; j < 32; j++){
                 for (int i = 0; i < 32; i++){ 
-                //there is an error here
+               
                 bool myBool = St.getRegisterLocation(j, i);   
-                output << myBool << "," << endl;
+                output << myBool << ",";
                 }
                 output << endl;
         }
