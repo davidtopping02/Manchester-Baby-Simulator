@@ -13,11 +13,8 @@
 #include <iostream>
 #include <bitset>
 #include <bits/stdc++.h>
-#include "main.h"
 #include "memoryLocations.h"
 using namespace std;
-
-int main();
 
 /**
  * @brief wrapper function to decode the operand and the opcode

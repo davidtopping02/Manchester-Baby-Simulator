@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <cstdint>
-#include "main.h"
+#include "manchesterBaby.h"
 #include "memoryLocations.h"
 using namespace std;
 
