@@ -1,5 +1,5 @@
 /**
- * @file main.h
+ * @file manchesterBaby.h
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
  * @brief file with function declarations for main.cpp
  * @version 0.1
@@ -7,14 +7,21 @@
  *
  * @copyright Copyright (c) 2021
  */
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef MANCHESTER_BABY_H
+#define MANCHESTER_BABY_H
 
 #include <iostream>
 #include <bitset>
 #include <bits/stdc++.h>
 #include "memoryLocations.h"
 using namespace std;
+
+/**
+ * @brief Runs the manchester baby simulator
+ *
+ * @param theStore
+ */
+void manchesterBabySimulator(Store *theStore);
 
 /**
  * @brief Reads in the machine code text file and puts all instructions in the store
@@ -94,4 +101,4 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
  */
 void printMemoryLocations(Register *CI, Register *PI, Register *Accumulator, Store *theStore);
 
-#endif // MAIN_H
+#endif // MANCHESTER_BABY_H

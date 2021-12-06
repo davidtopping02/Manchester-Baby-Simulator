@@ -47,9 +47,12 @@ public:
 class Store
 {
 private:
-    Register storeRegister[32];
+    Register *storeRegister;
+    int storeSize;
 
 public:
+    Store();
+    Store(int size);
     Register getRegister(int i);
     bool setRegiserLocation(int reg, int regLocation, bool pos);
     bool getRegisterLocation(int reg, int loc) const;

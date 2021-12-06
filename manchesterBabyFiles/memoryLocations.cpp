@@ -73,6 +73,30 @@ bool Register::getRegister()
 }
 
 /**
+ * @brief Default constructor for a new Store:: Store object
+ *
+ */
+Store::Store()
+{
+    Register *theStore = new Register[32];
+
+    this->storeRegister = theStore;
+    this->storeSize = 32;
+}
+
+/**
+ * @brief Constructor for a new Store of cardinality 'size':: Store object
+ *
+ */
+Store::Store(int size)
+{
+    Register *theStore = new Register[size];
+
+    this->storeRegister = theStore;
+    this->storeSize = size;
+}
+
+/**
  * @brief sets a specific memory location in the store to be on or off
  *
  * @param reg
@@ -136,7 +160,7 @@ ostream &operator<<(ostream &output, const Register &reg)
 ostream &operator<<(ostream &output, const Store &St)
 {
 
-    for (int j = 0; j < 32; j++)
+    for (int j = 0; j < St.storeSize; j++)
     {
         for (int i = 0; i < 32; i++)
         {
