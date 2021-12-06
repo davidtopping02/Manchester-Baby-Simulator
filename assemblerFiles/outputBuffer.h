@@ -43,6 +43,6 @@ public:
   string getFile() const;
   int writeBuffer();
 
-  friend ostream &operator<<(ostream &output, const OutputBuffer &cb);
+  friend ostream &operator<<(ostream &output, const OutputBuffer &ob);
 };
 #endif

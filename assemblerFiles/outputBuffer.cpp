@@ -112,12 +112,12 @@ int OutputBuffer::writeBuffer()
   return 0;
 }
 
-ostream &operator<<(ostream &output, const OutputBuffer &cb)
+ostream &operator<<(ostream &output, const OutputBuffer &ob)
 {
-  output << "File: " << cb.getFile() << endl;
+  output << "File: " << ob.getFile() << endl;
   for (int i = 0; i < 32; i++)
   {
-    output << i << ":" << cb.getBuffer(i) << endl;
+    output << i << ":" << ob.getBuffer(i) << endl;
   }
 
   return output;
