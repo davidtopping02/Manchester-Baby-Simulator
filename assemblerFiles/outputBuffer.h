@@ -38,9 +38,9 @@ public:
   OutputBuffer(string f);
 
   int setBuffer(int l, string mc);
-  string getBuffer(int l);
+  string getBuffer(int l) const;
   int setFile(string f);
-  string getFile();
+  string getFile() const;
   int writeBuffer();
 
   friend ostream &operator<<(ostream &output, const OutputBuffer &cb);

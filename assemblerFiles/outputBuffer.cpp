@@ -52,7 +52,7 @@ int OutputBuffer::setBuffer(int l, string mc)
  * @param l The line to get the machine code of
  * @return string The machine code at line l or 'ERROR' if there is an error
  */
-string OutputBuffer::getBuffer(int l)
+string OutputBuffer::getBuffer(int l) const
 {
   // Validates that l is a valid line
   if (l < 0 || l > 32)
@@ -84,7 +84,7 @@ int OutputBuffer::setFile(string f)
  *
  * @return string The current output file for the code buffer
  */
-string OutputBuffer::getFile()
+string OutputBuffer::getFile() const
 {
 
   return outputFile;
@@ -112,13 +112,12 @@ int OutputBuffer::writeBuffer()
   return 0;
 }
 
-ostream &
-operator<<(ostream &output, const OutputBuffer &cb)
+ostream &operator<<(ostream &output, const OutputBuffer &cb)
 {
-  output << "File: " << cb.outputFile << endl;
+  output << "File: " << cb.getFile() << endl;
   for (int i = 0; i < 32; i++)
   {
-    output << i << ":" << cb.buffer[i] << endl;
+    output << i << ":" << cb.getBuffer(i) << endl;
   }
 
   return output;

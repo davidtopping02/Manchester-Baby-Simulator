@@ -48,7 +48,7 @@ Assembler::~Assembler()
  *
  * @return int The memory location
  */
-int Assembler::getMemoryLocation()
+int Assembler::getMemoryLocation() const
 {
 
   return memoryLocation;
@@ -72,6 +72,18 @@ int Assembler::setMemoryLocation(int m)
 
   return 0;
 }
+
+/**
+ * @brief Returns the input file of the assembler
+ *
+ * @return string The path of the input file
+ */
+string Assembler::getInputFile() const
+{
+
+  return inputFile;
+}
+
 /**
  * @brief Sets the input file for the assembler
  *
@@ -87,6 +99,64 @@ int Assembler::setInputFile(string f)
   inputFile = f;
   return 0;
 }
+
+/**
+ * @brief Converts an integer into a big-endian binary number
+ *
+ * @param n The integer to be converted
+ * @return string The big-endian binary representation, "ERROR" means an error occured
+ */
+string Assembler::intToBinary(int n) const
+{
+  // Make sure that n can be converted to an integer
+  if (n < 0)
+  {
+    return "ERROR";
+  }
+
+  // Handle 0 edge-case
+  if (n == 0)
+  {
+    return "0";
+  }
+  string result = "";
+  while (n > 0)
+  {
+    result += to_string(n % 2);
+    n = n / 2;
+  }
+
+  return result;
+}
+/**
+ * @brief Categorises words depending on their meaning in the assembler
+ *
+ * @param word The word to be categorised
+ * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
+ */
+int Assembler::categoriseWord(string word) const
+{
+  // if the current word is a comment skip to the next line
+  if (word.find(";") != string::npos)
+  {
+    return -1;
+  }
+
+  // If the final character is a : then it is a label
+  if (word.find(":") == word.length() - 1)
+  {
+    return 0;
+  }
+
+  // If the word is in the instruction set or is the word 'VAR'
+  if (instructionSet.search(word) != -1 || word == "VAR")
+  {
+    return 1;
+  }
+
+  return 2;
+}
+
 /**
  * @brief Starts the assembler process
  *
@@ -95,16 +165,7 @@ int Assembler::setInputFile(string f)
 int Assembler::start()
 {
 
-  // Insert all the machine code commands
-  instructionSet.insert("JMP", "000");
-  instructionSet.insert("JRP", "100");
-  instructionSet.insert("LDN", "010");
-  instructionSet.insert("STO", "110");
-  instructionSet.insert("SUB", "001");
-  instructionSet.insert("SUB", "101");
-  instructionSet.insert("CMP", "011");
-  instructionSet.insert("STP", "111");
-
+  initialiseInstructionSet();
   // Create an file stream and validate it
   ifstream reader(inputFile);
   if (!reader)
@@ -549,60 +610,25 @@ int Assembler::start()
   outputBuffer.writeBuffer();
   return 0;
 }
-
 /**
- * @brief Converts an integer into a big-endian binary number
+ * @brief A function to initialse the assemblers instruction set.
  *
- * @param n The integer to be converted
- * @return string The big-endian binary representation, "ERROR" means an error occured
+ * @return int A status code of the function
  */
-string Assembler::intToBinary(int n)
+int Assembler::initialiseInstructionSet()
 {
-  // Make sure that n can be converted to an integer
-  if (n < 0)
-  {
-    return "ERROR";
-  }
 
-  // Handle 0 edge-case
-  if (n == 0)
-  {
-    return "0";
-  }
-  string result = "";
-  while (n > 0)
-  {
-    result += to_string(n % 2);
-    n = n / 2;
-  }
+  // TODO: set up error code catching
 
-  return result;
-}
-/**
- * @brief Categorises words depending on their meaning in the assembler
- *
- * @param word The word to be categorised
- * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
- */
-int Assembler::categoriseWord(string word)
-{
-  // if the current word is a comment skip to the next line
-  if (word.find(";") != string::npos)
-  {
-    return -1;
-  }
+  // Insert all the machine code commands
+  instructionSet.insert("JMP", "000");
+  instructionSet.insert("JRP", "100");
+  instructionSet.insert("LDN", "010");
+  instructionSet.insert("STO", "110");
+  instructionSet.insert("SUB", "001");
+  instructionSet.insert("SUB", "101");
+  instructionSet.insert("CMP", "011");
+  instructionSet.insert("STP", "111");
 
-  // If the final character is a : then it is a label
-  if (word.find(":") == word.length() - 1)
-  {
-    return 0;
-  }
-
-  // If the word is in the instruction set or is the word 'VAR'
-  if (instructionSet.search(word) != -1 || word == "VAR")
-  {
-    return 1;
-  }
-
-  return 2;
+  return 0;
 }

@@ -40,7 +40,7 @@ Instruction::Instruction(string n, string b)
  * @return string The name of the instruction
  */
 
-string Instruction::getName()
+ string Instruction::getName() const
 {
   return name;
 }
@@ -51,7 +51,7 @@ string Instruction::getName()
  * @return string The binary of the Instruction
  */
 
-string Instruction::getBinary()
+string Instruction::getBinary() const
 {
   return binary;
 }
@@ -77,7 +77,7 @@ void Instruction::setBinary(string b)
 
 ostream &operator<<(ostream &output, const Instruction &i)
 {
-  output << i.name << ":" << i.binary << endl;
+  output << i.getName() << ":" << i.getBinary() << endl;
 
   return output;
 }
