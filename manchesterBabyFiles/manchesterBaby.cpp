@@ -55,7 +55,7 @@ int main()
         decode(&PI, &opcode, &operand);
 
         // 4. Execute.
-        execute(&opcode, &operand, &CI, &PI, &Accumulator);
+        execute(&opcode, &operand, &CI, &PI, &Accumulator, &theStore);
 
         // printing all memory locations
         printMemoryLocations(&CI, &PI, &Accumulator, &theStore);
@@ -197,7 +197,7 @@ void fetch(Register *CI, Register *PI, Store *theStore)
 
     for (int i = 0; i < 32; i++)
     {
-        tempPi[i] = theStore->getRegisterLocation((storeLocation - 1), i);
+        tempPi[i] = theStore->getRegisterLocation((storeLocation), i);
     }
 
     // put the instruction from the store into the PI
@@ -302,71 +302,384 @@ string decodeOpcode(Register *PI)
  * @param PI
  * @param Accumulator
  */
-void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator)
+void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator, Store *theStore)
 {
 
-    // indirect jump
+    // indirect jump.
     if (*opcode == "JMP")
     {
+        // integer holding the CI value
+        int CIcount = 0;
+        // Getting the decimal value of CI
+        for (int i = 0; i < 32; i++)
+        {
+            if (CI->getLocation(i) == 1)
+            {
+                CIcount += pow(2, i);
+            }
+        }
+
+        // creating a temp register that is a copy of the register that the operand points to.
+        bool memory[32];
+        // decimal value of the aformentioned array
+        int memoryInt = 0;
+        // copying the register to the temp register
+        for (int i = 0; i < 32; i++)
+        {
+            memory[i] = theStore->getRegisterLocation((*operand), i);
+        }
+
+        // if the mamory value is negative
+        if (memory[31] == true)
+        {
+            // flip the bits
+            bool flip[32];
+            for (int i = 0; i < 32; i++)
+            {
+                char a = memory[i];
+                if (a == '0')
+                {
+                    flip[i] = 1;
+                }
+                else
+                {
+                    flip[i] = 0;
+                }
+            }
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (flip[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+            // add one and negate
+            memoryInt = -(memoryInt + 1);
+        }
+
+        // if the value is positive
+        if (memory[32] == false)
+        {
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (memory[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+        }
+
+        // Copying the new array to the CI
+        bool NewCIArray[32];
+        for (int i = 0; i < 32; i++)
+        {
+            int mask = 1u << (32 - 1 - i);
+            NewCIArray[i] = (memoryInt & mask) ? true : false;
+            CI->setLocation(i, NewCIArray[i]);
+        }
     }
 
     // relative jump
     if (*opcode == "JRP")
     {
+        // Integer variable holding the decimal value of the CI
+        int CIcount = 0;
 
-        int counter = 0;
-
+        // getting the decimal value of CI
         for (int i = 0; i < 32; i++)
         {
             if (CI->getLocation(i) == 1)
             {
-                counter += pow(2, i);
+                CIcount += pow(2, i);
             }
         }
 
-        int newCI = counter + *operand;
+        // temp variable holding a copy of the array that the operand points to
+        bool memory[32];
+        // temp variable holding the decimal value of the array
+        int memoryInt = 0;
 
-        int newCIarray[32];
-
+        // copying the register to the temp array
         for (int i = 0; i < 32; i++)
         {
-            newCIarray[i] = newCI % 2;
-            newCI = newCI / 2;
+            memory[i] = theStore->getRegisterLocation((*operand), i);
         }
-        for (int i; i < 32; i++)
+
+        // if the value is negative
+        if (memory[31] == true)
         {
-            if (newCIarray[31 - i] == '1')
+            // flip the bits
+            bool flip[32];
+            for (int i = 0; i < 32; i++)
             {
-                CI->setLocation(i, 1);
+                char a = memory[i];
+                if (a == '0')
+                {
+                    flip[i] = 1;
+                }
+                else
+                {
+                    flip[i] = 0;
+                }
             }
-            else
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
             {
-                CI->setLocation(i, 0);
+                if (flip[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
             }
+            // add one and negate
+            memoryInt = -(memoryInt + 1);
+        }
+
+        // if the array is false
+        if (memory[32] == false)
+        {
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (memory[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+        }
+        // add the CI to the array value
+        int NewCI = CIcount + memoryInt;
+        // change the CI to the new value
+        bool NewCIArray[32];
+        for (int i = 0; i < 32; i++)
+        {
+            int mask = 1u << (32 - 1 - i);
+            NewCIArray[i] = (NewCI & mask) ? 1 : 0;
+            CI->setLocation(i, NewCIArray[i]);
         }
     }
 
     // Negative Load
     if (*opcode == "LDN")
     {
+        // temp array holding the register that the operand points to
+        bool load[32];
+        // copying the register to the temp array
+        for (int i = 0; i < 32; i++)
+        {
+            load[i] = theStore->getRegisterLocation((*operand), i);
+        }
+        // temp variable holding the flipped version of the load array
+        bool flip[32];
+        // if the number is negative
+        if (load[31] == true)
+        {
+            // flip the bits
+            for (int i = 0; i < 32; i++)
+            {
+                if (load[i] == false)
+                {
+                    flip[i] = true;
+                }
+                else
+                {
+                    flip[i] = false;
+                }
+            }
+            // copy the flip array to the accumulator
+            for (int i = 0; i < 32; i++)
+            {
+                Accumulator->setLocation(i, flip[i]);
+            }
+            // add one to the accumulator
+            incrementRegister(Accumulator);
+        }
+        // if the value is positive
+        if (load[31] == false)
+        {
+            // getting the decimal value of the array
+            int storeLocation = 0;
+
+            for (int i = 0; i < 32; i++)
+            {
+                if (load[i] == 1)
+                {
+                    storeLocation += pow(2, i);
+                }
+            }
+            // negate the value
+            storeLocation = -storeLocation;
+
+            // converting the decimal to binary
+            for (int i = 32; i > -1; i--)
+            {
+                int mask = 1u << (32 - 1 - i);
+                flip[i] = (storeLocation & mask) ? 1 : 0;
+            }
+            // reversing the array so that the smallest value is on the left
+            int temp;
+            int j = 31;
+            for (int i = 0; i < j; i++, j--)
+            {
+                temp = flip[i];
+                flip[i] = flip[j];
+                flip[j] = temp;
+            }
+            // copying the reversed array to the accu,ulator
+            for (int i = 0; i < 32; i++)
+            {
+                Accumulator->setLocation(i, flip[i]);
+            }
+        }
     }
     // store to memory
     if (*opcode == "STO")
     {
+        // copys the accumulator to memory
+        for (int i = 0; i < 32; i++)
+        {
+            theStore->setRegiserLocation((*operand), i, (Accumulator->getLocation(i)));
+        }
     }
 
     // Subtract from accumulator
     if (*opcode == "SUB")
     {
-    }
+        // temp array for both copys of accumulator and register
+        bool memory[32];
+        bool accumulatorArray[32];
+        int memoryInt = 0;
+        int accumulatorInt = 0;
 
-    if (*opcode == "SUB")
-    {
+        // copying the registers to the temp arrays
+        for (int i = 0; i < 32; i++)
+        {
+            memory[i] = theStore->getRegisterLocation((*operand), i);
+        }
+        for (int i = 0; i < 32; i++)
+        {
+            accumulatorArray[i] = Accumulator->getLocation(i);
+        }
+        // if the memory array is negative
+        if (memory[31] == true)
+        {
+            // flip the array
+            bool flip[32];
+            for (int i = 0; i < 32; i++)
+            {
+                char a = memory[i];
+                if (a == '0')
+                {
+                    flip[i] = 1;
+                }
+                else
+                {
+                    flip[i] = 0;
+                }
+            }
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (flip[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+            // add one and negate
+            memoryInt = -(memoryInt + 1);
+        }
+        // if the array is positive
+        if (memory[31] == false)
+        {
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (memory[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+        }
+        // if the accumulator is negative
+        if (accumulatorArray[31] == true)
+        {
+            // flip the bits
+            bool flip[32];
+            for (int i = 0; i < 32; i++)
+            {
+                int a = accumulatorArray[i];
+                if (a == 0)
+                {
+                    flip[i] = 1;
+                }
+                else
+                {
+                    flip[i] = 0;
+                }
+            }
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (flip[i] == 1)
+                {
+                    accumulatorInt += pow(2, i);
+                }
+            }
+            // negate and add one
+            accumulatorInt = -(accumulatorInt + 1);
+        }
+        // if the accumulator is positive
+        if (accumulatorArray[31] == false)
+        {
+            // get the decimal value
+            for (int i = 0; i < 32; i++)
+            {
+                if (accumulatorArray[i] == 1)
+                {
+                    memoryInt += pow(2, i);
+                }
+            }
+        }
+        // subtract the memory from the accumulator
+        int newAccumulator = accumulatorInt - memoryInt;
+
+        // get the binaray
+        bool newAccumulatorArray[32];
+        for (int i = 0; i < 32; i++)
+        {
+            int mask = 1u << (32 - 1 - i);
+            newAccumulatorArray[i] = (newAccumulator & mask) ? 1 : 0;
+        }
+
+        // reverse the array
+        int temp;
+        int j = 31;
+        for (int i = 0; i < j; i++, j--)
+        {
+            temp = newAccumulatorArray[i];
+            newAccumulatorArray[i] = newAccumulatorArray[j];
+            newAccumulatorArray[j] = temp;
+        }
+        // update the accumulator
+        for (int i = 0; i < 32; i++)
+        {
+            Accumulator->setLocation(i, newAccumulatorArray[i]);
+        }
     }
 
     // Skip next instuction if accumulator is negaive
     if (*opcode == "CMP")
     {
+        // get the last value of the accumulator
+        bool accumulator = Accumulator->getLocation(32);
+
+        // if the accumulator is negative
+        if (accumulator == true)
+        {
+            // increment the CI
+            incrementRegister(CI);
+        }
     }
 
     // halts execution
