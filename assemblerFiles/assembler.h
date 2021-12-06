@@ -48,12 +48,12 @@ public:
   Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f);
   ~Assembler();
 
-  int getMemoryLocation();
+  int getMemoryLocation() const;
   int setMemoryLocation(int m);
-  string getInputFile();
+  string getInputFile() const;
   int setInputFile(string f);
-  string intToBinary(int n);
-  int categoriseWord(string word);
+  string intToBinary(int n) const;
+  int categoriseWord(string word) const;
   int start();
 };
 #endif

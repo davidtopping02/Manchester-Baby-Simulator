@@ -48,7 +48,7 @@ Assembler::~Assembler()
  *
  * @return int The memory location
  */
-int Assembler::getMemoryLocation()
+int Assembler::getMemoryLocation() const
 {
 
   return memoryLocation;
@@ -78,7 +78,7 @@ int Assembler::setMemoryLocation(int m)
  *
  * @return string The path of the input file
  */
-string Assembler::getInputFile()
+string Assembler::getInputFile() const
 {
 
   return inputFile;
@@ -106,7 +106,7 @@ int Assembler::setInputFile(string f)
  * @param n The integer to be converted
  * @return string The big-endian binary representation, "ERROR" means an error occured
  */
-string Assembler::intToBinary(int n)
+string Assembler::intToBinary(int n) const
 {
   // Make sure that n can be converted to an integer
   if (n < 0)
@@ -134,7 +134,7 @@ string Assembler::intToBinary(int n)
  * @param word The word to be categorised
  * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
  */
-int Assembler::categoriseWord(string word)
+int Assembler::categoriseWord(string word) const
 {
   // if the current word is a comment skip to the next line
   if (word.find(";") != string::npos)
