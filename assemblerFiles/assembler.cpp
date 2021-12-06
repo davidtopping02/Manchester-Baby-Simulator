@@ -165,6 +165,7 @@ int Assembler::categoriseWord(string word) const
 int Assembler::start()
 {
 
+  initialiseInstructionSet();
   // Create an file stream and validate it
   ifstream reader(inputFile);
   if (!reader)
