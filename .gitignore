@@ -2,9 +2,8 @@
 main
 *.o
 simulator
-assemblerFiles/assembler
+assembler
 assemblerTest
 machineCode.txt
 
-assembler/testOutput.txt
 
