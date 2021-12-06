@@ -72,6 +72,18 @@ int Assembler::setMemoryLocation(int m)
 
   return 0;
 }
+
+/**
+ * @brief Returns the input file of the assembler
+ *
+ * @return string The path of the input file
+ */
+string Assembler::getInputFile()
+{
+
+  return inputFile;
+}
+
 /**
  * @brief Sets the input file for the assembler
  *
@@ -87,6 +99,64 @@ int Assembler::setInputFile(string f)
   inputFile = f;
   return 0;
 }
+
+/**
+ * @brief Converts an integer into a big-endian binary number
+ *
+ * @param n The integer to be converted
+ * @return string The big-endian binary representation, "ERROR" means an error occured
+ */
+string Assembler::intToBinary(int n)
+{
+  // Make sure that n can be converted to an integer
+  if (n < 0)
+  {
+    return "ERROR";
+  }
+
+  // Handle 0 edge-case
+  if (n == 0)
+  {
+    return "0";
+  }
+  string result = "";
+  while (n > 0)
+  {
+    result += to_string(n % 2);
+    n = n / 2;
+  }
+
+  return result;
+}
+/**
+ * @brief Categorises words depending on their meaning in the assembler
+ *
+ * @param word The word to be categorised
+ * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
+ */
+int Assembler::categoriseWord(string word)
+{
+  // if the current word is a comment skip to the next line
+  if (word.find(";") != string::npos)
+  {
+    return -1;
+  }
+
+  // If the final character is a : then it is a label
+  if (word.find(":") == word.length() - 1)
+  {
+    return 0;
+  }
+
+  // If the word is in the instruction set or is the word 'VAR'
+  if (instructionSet.search(word) != -1 || word == "VAR")
+  {
+    return 1;
+  }
+
+  return 2;
+}
+
 /**
  * @brief Starts the assembler process
  *
@@ -548,61 +618,4 @@ int Assembler::start()
 
   outputBuffer.writeBuffer();
   return 0;
-}
-
-/**
- * @brief Converts an integer into a big-endian binary number
- *
- * @param n The integer to be converted
- * @return string The big-endian binary representation, "ERROR" means an error occured
- */
-string Assembler::intToBinary(int n)
-{
-  // Make sure that n can be converted to an integer
-  if (n < 0)
-  {
-    return "ERROR";
-  }
-
-  // Handle 0 edge-case
-  if (n == 0)
-  {
-    return "0";
-  }
-  string result = "";
-  while (n > 0)
-  {
-    result += to_string(n % 2);
-    n = n / 2;
-  }
-
-  return result;
-}
-/**
- * @brief Categorises words depending on their meaning in the assembler
- *
- * @param word The word to be categorised
- * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
- */
-int Assembler::categoriseWord(string word)
-{
-  // if the current word is a comment skip to the next line
-  if (word.find(";") != string::npos)
-  {
-    return -1;
-  }
-
-  // If the final character is a : then it is a label
-  if (word.find(":") == word.length() - 1)
-  {
-    return 0;
-  }
-
-  // If the word is in the instruction set or is the word 'VAR'
-  if (instructionSet.search(word) != -1 || word == "VAR")
-  {
-    return 1;
-  }
-
-  return 2;
 }

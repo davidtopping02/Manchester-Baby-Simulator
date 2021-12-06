@@ -50,9 +50,10 @@ public:
 
   int getMemoryLocation();
   int setMemoryLocation(int m);
+  string getInputFile();
   int setInputFile(string f);
-  int start();
   string intToBinary(int n);
   int categoriseWord(string word);
+  int start();
 };
 #endif
