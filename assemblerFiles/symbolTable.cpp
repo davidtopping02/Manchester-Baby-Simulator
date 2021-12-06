@@ -4,9 +4,9 @@
  * @brief contains the logic for the symbol table
  * @version 0.1
  * @date 2021-11-22
- * 
+ *z
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "symbolTable.h"
@@ -14,7 +14,7 @@
 
 /**
  * @brief Construct a new Symbol Table object
- * 
+ *
  */
 SymbolTable::SymbolTable()
 {
@@ -24,7 +24,7 @@ SymbolTable::SymbolTable()
 }
 /**
  * @brief Construct a new Symbol Table object
- * 
+ *
  * @param size The size of the Symbol Table
  */
 SymbolTable::SymbolTable(int size)
@@ -36,7 +36,7 @@ SymbolTable::SymbolTable(int size)
 
 /**
  * @brief Destroy the Symbol Table object
- * 
+ *
  */
 SymbolTable::~SymbolTable()
 {
@@ -45,7 +45,7 @@ SymbolTable::~SymbolTable()
 
 /**
  * @brief Rehashes the table and updates the stored symbol table
- * 
+ *
  * @return true If the table rehashed successfully
  * @return false If the table failed to rehash
  */
@@ -92,11 +92,11 @@ bool SymbolTable::reHash()
 
 /**
  * @brief Hashes the label and returns the position in the Symbol Table. If there is no space in the Symbol Table or an error occurs, it returns -1
- * 
- * @param l 
+ *
+ * @param l
  * @return int The position in the Symbol Table or a -1 if an error occurs
  */
-int SymbolTable::hashFunction(string l)
+int SymbolTable::hashFunction(string l) const
 {
 
   // Check if a label is passed in
@@ -117,7 +117,7 @@ int SymbolTable::hashFunction(string l)
 
   for (int i = 0; i <= N; i++)
   {
-    /* 
+    /*
         Add to the total with the function of:
         Character @ (Length - i) * p ^ (i)
         */
@@ -135,7 +135,7 @@ int SymbolTable::hashFunction(string l)
 
 /**
  * @brief Inserts a Symbol to the Symbol table
- * 
+ *
  * @param l The label of the Symbol
  * @param a The address of the Symbol
  * @return true If the function succeeds in adding the Symbol
@@ -191,11 +191,11 @@ bool SymbolTable::insert(string l, string a)
 
 /**
  * @brief Returns the position of a label in the SymbolTable. Returns -1 if there is no label or an error occurs
- * 
+ *
  * @param l The label of the Symbol to search for
  * @return int The position of the label in the SymbolTable. -1 if an error occurs
  */
-int SymbolTable::search(string l)
+int SymbolTable::search(string l) const
 {
   // Make sure a valid label is passed in
   if (l == "")
@@ -233,7 +233,7 @@ int SymbolTable::search(string l)
 
 /**
  * @brief Updates the address of the label. Returns false if label does not exist or another error occurs
- * 
+ *
  * @param l The label of the Symbol to update
  * @param a The new address for the Symbol
  * @return true If the function succeeds in updating the address of the Symbol
@@ -258,12 +258,12 @@ bool SymbolTable::update(string l, string a)
 
 /**
  * @brief Returns the address of the Symbol with the given label
- * 
+ *
  * @param l The label of the Symbol to get the address of
  * @return string The address of the Symbol
  */
 
-string SymbolTable::lookup(string l)
+string SymbolTable::lookup(string l) const
 {
   // Make sure that the label is valid
   if (l == "")
@@ -280,17 +280,46 @@ string SymbolTable::lookup(string l)
 }
 
 /**
+ * @brief Returns the table of symbols of the object
+ *
+ * @return Symbol* A pointer to the Symbol Table table
+ */
+Symbol *SymbolTable::getTable() const
+{
+  return table;
+}
+
+/**
+ * @brief Returns the max table size of the symbol table
+ *
+ * @return int The max table size of the symbol table
+ */
+int SymbolTable::getTableSize() const
+{
+  return tablesize;
+}
+
+/**
+ * @brief Returns the current size of the symbol table
+ *
+ * @return int The current size of the symbol table
+ */
+int SymbolTable::getCurrentSize() const
+{
+  return currentSize;
+}
+/**
  * @brief Overloads the output operator to display the Symbol Table for debugging
- * 
+ *
  * @param output The output stream
  * @param st The symbol table
  * @return ostream& The final output
  */
 ostream &operator<<(ostream &output, const SymbolTable &st)
 {
-  for (int i = 0; i < st.tablesize; i++)
+  for (int i = 0; i < st.getTableSize(); i++)
   {
-    output << i << ":" << st.table[i].getLabel() << ":" << st.table[i].getAddress() << endl;
+    output << i << ":" << st.getTable()[i].getLabel() << ":" << st.getTable()[i].getAddress() << endl;
   }
   return output;
 }

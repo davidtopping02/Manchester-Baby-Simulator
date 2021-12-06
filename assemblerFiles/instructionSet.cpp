@@ -4,16 +4,16 @@
  * @brief contains the logic for the instruction set
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "instructionSet.h"
 
 /**
  * @brief Construct a new Instruction Set object
- * 
+ *
  */
 InstructionSet::InstructionSet()
 {
@@ -24,7 +24,7 @@ InstructionSet::InstructionSet()
 
 /**
  * @brief Destroy the Instruction Set object
- * 
+ *
  */
 InstructionSet::~InstructionSet()
 {
@@ -33,7 +33,7 @@ InstructionSet::~InstructionSet()
 
 /**
  * @brief Inserts an Instruction into the Instruction Set
- * 
+ *
  * @param n The name of the Instruction
  * @param b The binary of the Instruction
  * @return true If the function succeeds in adding the Instruction
@@ -66,11 +66,11 @@ bool InstructionSet::insert(string n, string b)
 
 /**
  * @brief Returns the position of a name in the Instruction Set. Returns -1 if there is no name or an error occurs
- * 
+ *
  * @param n The name of the Instruction to search for
  * @return int The position of the name in the Instruction Set. -1 if an error occurs
  */
-int InstructionSet::search(string n)
+int InstructionSet::search(string n) const
 {
   // Make sure a valid name is passed in
   if (n == "")
@@ -100,12 +100,12 @@ int InstructionSet::search(string n)
 
 /**
  * @brief Returns the binary of the Instruction with the given name
- * 
+ *
  * @param n The name of the Instruction to get the binary of
  * @return string The binary of the Instruction
  */
 
-string InstructionSet::lookup(string n)
+string InstructionSet::lookup(string n) const
 {
   // Make sure that the name is valid
   if (n == "")
@@ -120,19 +120,47 @@ string InstructionSet::lookup(string n)
   }
   return table[result].getBinary();
 }
+/**
+ * @brief Returns the table of the instruction set
+ *
+ * @return Instruction* The table of instructions
+ */
+Instruction *InstructionSet::getTable() const
+{
+  return table;
+}
 
 /**
+ * @brief Returns the max size of the instruction set table
+ *
+ * @return int The maximum size of the instruction set table
+ */
+int InstructionSet::getTableSize() const
+{
+  return tablesize;
+}
+
+/**
+ * @brief Returns the current size of the instruction set table
+ *
+ * @return int The current size of the instruction set table
+ */
+int InstructionSet::getCurrentSize() const
+{
+  return currentSize;
+}
+/**
  * @brief Overloads the output operator to display the Instruction Set
- * 
+ *
  * @param output The output stream
  * @param is The Instruction Set
  * @return ostream& The final output
  */
 ostream &operator<<(ostream &output, const InstructionSet &is)
 {
-  for (int i = 0; i < is.tablesize; i++)
+  for (int i = 0; i < is.getTableSize(); i++)
   {
-    output << i << ":" << is.table[i].getName() << ":" << is.table[i].getBinary() << endl;
+    output << i << ":" << is.getTable()[i].getName() << ":" << is.getTable()[i].getBinary() << endl;
   }
   return output;
 }

@@ -4,9 +4,9 @@
  * @brief function and class declarations for the instructions in the instruction set
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #ifndef INSTRUCTION_H
@@ -14,7 +14,7 @@
 
 using namespace std;
 
-/** 
+/**
  * ### INCLUDES ###
  */
 
@@ -22,12 +22,12 @@ using namespace std;
 #include <iostream>
 
 /**
- * ### CLASS DEFINITIONS ### 
+ * ### CLASS DEFINITIONS ###
  */
 
 /**
  * @brief Stores a Instruction to be stored in the instruction table
- * 
+ *
  */
 
 class Instruction
@@ -35,13 +35,13 @@ class Instruction
 private:
   /**
    * @brief The name of the instruction
-   * 
+   *
    */
   string name;
 
   /**
    * @brief The binary of the instruction
-   * 
+   *
    */
   string binary;
 
@@ -49,8 +49,8 @@ public:
   Instruction();
   Instruction(string n, string b);
 
-  string getName();
-  string getBinary();
+  string getName() const;
+  string getBinary() const;
 
   void setBinary(string b);
 

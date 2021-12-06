@@ -73,8 +73,8 @@ void Symbol::setAddress(string a)
  * @param s The symbol object to be output
  * @return ostream& The formatted output
  */
-ostream &operator<<(ostream &output, const Symbol &s)
+ostream &operator<<(ostream &output, Symbol &s)
 {
-  output << s.label << ":" << s.address << endl;
+  output << s.getLabel() << ":" << s.getAddress() << endl;
   return output;
 }
