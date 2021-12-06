@@ -82,7 +82,7 @@ string decodeOpcode(Register *PI);
  * @param PI
  * @param Accumulator
  */
-void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator);
+void execute(string *opcode, int *operand, Register *CI, Register *PI, Register *Accumulator, Store *theStore);
 
 /**
  * @brief Helper function prints all the memory locations
