@@ -55,5 +55,6 @@ public:
   string intToBinary(int n) const;
   int categoriseWord(string word) const;
   int start();
+  int initialiseInstructionSet();
 };
 #endif

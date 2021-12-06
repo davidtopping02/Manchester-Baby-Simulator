@@ -165,16 +165,6 @@ int Assembler::categoriseWord(string word) const
 int Assembler::start()
 {
 
-  // Insert all the machine code commands
-  instructionSet.insert("JMP", "000");
-  instructionSet.insert("JRP", "100");
-  instructionSet.insert("LDN", "010");
-  instructionSet.insert("STO", "110");
-  instructionSet.insert("SUB", "001");
-  instructionSet.insert("SUB", "101");
-  instructionSet.insert("CMP", "011");
-  instructionSet.insert("STP", "111");
-
   // Create an file stream and validate it
   ifstream reader(inputFile);
   if (!reader)
@@ -617,5 +607,27 @@ int Assembler::start()
   }
 
   outputBuffer.writeBuffer();
+  return 0;
+}
+/**
+ * @brief A function to initialse the assemblers instruction set.
+ *
+ * @return int A status code of the function
+ */
+int Assembler::initialiseInstructionSet()
+{
+
+  // TODO: set up error code catching
+
+  // Insert all the machine code commands
+  instructionSet.insert("JMP", "000");
+  instructionSet.insert("JRP", "100");
+  instructionSet.insert("LDN", "010");
+  instructionSet.insert("STO", "110");
+  instructionSet.insert("SUB", "001");
+  instructionSet.insert("SUB", "101");
+  instructionSet.insert("CMP", "011");
+  instructionSet.insert("STP", "111");
+
   return 0;
 }
