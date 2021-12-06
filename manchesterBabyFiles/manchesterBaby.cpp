@@ -8,22 +8,18 @@
  * @copyright Copyright (c) 2021
  *
  */
-
 #include <iostream>
 #include <cstdint>
 #include "manchesterBaby.h"
 #include "memoryLocations.h"
 using namespace std;
 
-#define SIZE = 32;
 /**
- * @brief main method
+ * @brief Runs the manchester baby simulator
  *
- * @return SUCCESS
- * @return ERROR
+ * @param theStore
  */
-
-int main()
+void manchesterBabySimulator(Store *theStore)
 {
     // initialise local variables
     bool finished = false;
@@ -34,13 +30,12 @@ int main()
     string opcode;
 
     // declare memory locations
-    Store theStore;
     Register CI;
     Register PI;
     Register Accumulator;
 
     // reading in the machine code
-    readInMachineCode(&theStore);
+    readInMachineCode(theStore);
 
     // running the fetch execute cycle
     while (finished != true)
@@ -49,16 +44,16 @@ int main()
         incrementRegister(&CI);
 
         // 2. Fetch
-        fetch(&CI, &PI, &theStore);
+        fetch(&CI, &PI, theStore);
 
         // 3. Decode opcode and operand
         decode(&PI, &opcode, &operand);
 
         // 4. Execute.
-        execute(&opcode, &operand, &CI, &PI, &Accumulator, &theStore);
+        execute(&opcode, &operand, &CI, &PI, &Accumulator, theStore);
 
         // printing all memory locations
-        printMemoryLocations(&CI, &PI, &Accumulator, &theStore);
+        printMemoryLocations(&CI, &PI, &Accumulator, theStore);
 
         // halting if the opcode is STP
         if (opcode == "STP")
@@ -180,7 +175,6 @@ std::bitset<N> increment(std::bitset<N> in)
  */
 void fetch(Register *CI, Register *PI, Store *theStore)
 {
-
     // convert the CI to an int
     int storeLocation = 0;
 
@@ -310,6 +304,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     {
         // integer holding the CI value
         int CIcount = 0;
+
         // Getting the decimal value of CI
         for (int i = 0; i < 32; i++)
         {
@@ -321,8 +316,10 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
 
         // creating a temp register that is a copy of the register that the operand points to.
         bool memory[32];
+
         // decimal value of the aformentioned array
         int memoryInt = 0;
+
         // copying the register to the temp register
         for (int i = 0; i < 32; i++)
         {
@@ -680,11 +677,6 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
             // increment the CI
             incrementRegister(CI);
         }
-    }
-
-    // halts execution
-    if (*opcode == "STP")
-    {
     }
 };
 
