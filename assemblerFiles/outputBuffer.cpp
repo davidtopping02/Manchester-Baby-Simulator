@@ -94,6 +94,8 @@ int OutputBuffer::setBufferLineValue(int l, int val)
 
   updateBufferSize(l);
   buffer[l].setInstructionValue(val);
+
+  return 0;
 }
 
 int OutputBuffer::setBufferLineName(int l, string name)
@@ -102,6 +104,8 @@ int OutputBuffer::setBufferLineName(int l, string name)
 
   updateBufferSize(l);
   buffer[l].setInstructionName(name);
+
+  return 0;
 }
 /**
  * @brief Gets the Buffer Line at line l
