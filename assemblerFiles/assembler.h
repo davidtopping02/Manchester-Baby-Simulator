@@ -46,7 +46,7 @@ private:
 
 public:
   Assembler();
-  Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f);
+  Assembler(string inF, string outF);
   ~Assembler();
 
   int getMemoryLocation() const;

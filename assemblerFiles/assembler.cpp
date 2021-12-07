@@ -22,19 +22,14 @@ Assembler::Assembler()
 
 /**
  * @brief Construct a new Assembler Object
- *
- * @param is An instruction set object to initialise the Assembler with
- * @param st A symbol table object to initialise the Assembler with
- * @param ob An output buffer object to initialise the Assembler with
- * @param f A filepath to initialise the Assembler with
+ * @param inF The filepath of the assembly code
+ * @param outF the filepath of the output file
  */
-Assembler::Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f)
+Assembler::Assembler(string inF, string outF)
 {
-  instructionSet = is;
-  symbolTable = st;
-  outputBuffer = ob;
   memoryLocation = 0;
-  inputFile = f;
+  inputFile = inF;
+  outputBuffer.setFile(outF);
 }
 /**
  * @brief Destroy the Assembler object
