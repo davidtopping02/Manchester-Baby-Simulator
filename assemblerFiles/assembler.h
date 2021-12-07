@@ -24,6 +24,7 @@
 #include "instructionSet.h"
 #include "symbolTable.h"
 #include "outputBuffer.h"
+#include "utility.h"
 
 /**
  * ### CLASS DEFINITIONS ###
@@ -52,7 +53,6 @@ public:
   int setMemoryLocation(int m);
   string getInputFile() const;
   int setInputFile(string f);
-  string intToBinary(int n) const;
   int categoriseWord(string word) const;
   int start();
   int initialiseInstructionSet();
