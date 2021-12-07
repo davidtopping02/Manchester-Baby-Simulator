@@ -9,8 +9,8 @@
  *
  */
 #include <iostream>
-#include "manchesterBaby.h"
-#include "memoryLocations.h"
+#include "manchesterBabyFiles/manchesterBaby.h"
+#include "manchesterBabyFiles/memoryLocations.h"
 using namespace std;
 
 /**

@@ -6,8 +6,8 @@ all: main.o memoryLocations.o menu.o assembler.o symbol.o symbolTable.o instruct
 	$(CC) $(CFLAGS) -o main main.o memoryLocations.o menu.o assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
 
 # Compiles just the simulator
-simulator: main.o memoryLocations.o menu.o
-	$(CC) $(CFLAGS) -o simulator main.o memoryLocations.o menu.o
+simulator: manchesterBaby.o memoryLocations.o menu.o
+	$(CC) $(CFLAGS) -o simulator manchesterBaby.o memoryLocations.o menu.o
 
 # Compiles just the assembler
 assembler: assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
@@ -53,12 +53,12 @@ utility.o: assemblerFiles/utility.cpp assemblerFiles/utility.cpp
 
 ##### simulator files #####
 
-main.o: main.cpp main.h memoryLocations.h
-	$(CC) -c main.cpp
+manchesterBaby.o: manchesterBabyFiles/manchesterBaby.cpp manchesterBabyFiles/manchesterBaby.h manchesterBabyFiles/memoryLocations.h
+	$(CC) -c manchesterBabyFiles/manchesterBaby.cpp
 
-memoryLocations.o: memoryLocations.cpp memoryLocations.h
-	$(CC) -c memoryLocations.cpp 
+memoryLocations.o: manchesterBabyFiles/memoryLocations.cpp manchesterBabyFiles/memoryLocations.h
+	$(CC) -c manchesterBabyFiles/memoryLocations.cpp 
 
-menu.o: menu.cpp main.h memoryLocations.h
+menu.o: menu.cpp manchesterBabyFiles/manchesterBaby.h manchesterBabyFiles/memoryLocations.h
 	$(CC) -c menu.cpp
 
