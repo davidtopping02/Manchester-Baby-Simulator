@@ -52,7 +52,10 @@ public:
   int getMemoryLocation() const;
   int setMemoryLocation(int m);
   string getInputFile() const;
+
   int setInputFile(string f);
+  int setOutputFile(string f);
+
   int categoriseWord(string word) const;
   int start();
   int initialiseInstructionSet();

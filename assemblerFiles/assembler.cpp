@@ -96,6 +96,21 @@ int Assembler::setInputFile(string f)
 }
 
 /**
+ * @brief Sets the output file for the program
+ *
+ * @param f The path to the output file
+ * @return int The status of the function
+ */
+
+int Assembler::setOutputFile(string f)
+{
+
+  // TODO: Add Verification
+
+  outputBuffer.setFile(f);
+}
+
+/**
  * @brief Categorises words depending on their meaning in the assembler
  *
  * @param word The word to be categorised
