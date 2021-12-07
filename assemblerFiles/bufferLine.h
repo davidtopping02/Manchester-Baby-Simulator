@@ -18,12 +18,14 @@ using namespace std;
 #include <iostream>
 #include <string>
 
+#include "utility.h"
+
 /**
  * ### CLASS DEFINITIONS ###
  */
 
 /**
- * @brief Stores a Instruction to be stored in the instruction table
+ * @brief Stores one line of the OUtput Buffer
  *
  */
 
@@ -31,16 +33,28 @@ class BufferLine
 {
 private:
   string operand;
-  string instruction;
+  string instructionBinary;
+  string instructionName;
+  int name;
+  int value;
 
 public:
   BufferLine();
-  BufferLine(string op, string ins);
-  string getOperand() const;
-  string getInstruction() const;
+  BufferLine(string op, string insBinary, string insName);
 
-  int setOperand();
-  int setInstruction();
+  string getOperand() const;
+  string getInstructionBinary() const;
+  string getInstructionName() const;
+  int getInstructionValue() const;
+
+  int setOperand(string op);
+  int setInstructionBinary(string ins);
+  int setInstructionName(string name);
+  int setInstructionValue(int val);
+
+  string asMachineCode() const;
+
+  friend ostream &operator<<(ostream &output, const BufferLine &bl);
 };
 
 #endif
