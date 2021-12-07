@@ -147,11 +147,8 @@ int Assembler::start()
 
   // Create a variable to store the current line in the file
   string line;
-  int counter = 0;
   while (getline(reader, line))
   {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
 
     // Create a place to store all of the words on this line
     vector<string> words = {};
@@ -416,9 +413,6 @@ int Assembler::start()
   }
   while (getline(reader2, line))
   {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
-
     // Create a place to store all of the words on this line
     vector<string> words = {};
 
