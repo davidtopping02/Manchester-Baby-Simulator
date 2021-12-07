@@ -21,6 +21,7 @@ using namespace std;
 #include <iostream>
 
 #include "symbol.h"
+#include "utility.h"
 /**
  * ### CLASS DEFINITIONS ###
  */

@@ -9,6 +9,7 @@
  */
 
 #include "outputBuffer.h"
+
 /**
  * @brief Construct a new Code Buffer object
  *
@@ -16,6 +17,8 @@
 OutputBuffer::OutputBuffer()
 {
   outputFile = "machineCode.txt";
+  buffer = new BufferLine[32];
+  currentSize = 0;
 }
 /**
  * @brief Construct a new Code Buffer object
@@ -25,40 +28,95 @@ OutputBuffer::OutputBuffer()
 OutputBuffer::OutputBuffer(string f)
 {
   outputFile = f;
+  buffer = new BufferLine[32];
+  currentSize = 0;
 }
+
 /**
- * @brief Set the buffer at line l to the machine code mc
+ * @brief Set the buffer at line l to the command and operand (optional)
  *
  * @param l The line to change in the buffer
- * @param mc The machine code to set the line to
- * @return int Status of the function, returns -1 if there is an error
+ * @param ins The instruction to set the buffer line to in binary
+ * @return int Status of the function
  */
-int OutputBuffer::setBuffer(int l, string mc)
+int OutputBuffer::setBufferLine(int l, string ins)
 {
 
-  // Validates that l is a valid line & that mc is valid machine code
-  if (l < 0 || l > 31 || mc == "" || mc.length() > 32)
-  {
-    return -1;
-  }
+  // TODO: ADD VALIDATION FOR UPDATED FORMAT
 
-  buffer[l] = mc;
+  updateBufferSize(l);
+  buffer[l].setInstructionBinary(ins);
 
   return 0;
 }
+
 /**
- * @brief Gets the machine code at line l in the code buffer
+ * @brief Set the buffer at line l to the command and operand (optional)
+ *
+ * @param l The line to change in the buffer
+ * @param ins The instruction to set the buffer line to in binary
+ * @param op The operand to set the buffer line to in binary (optional)
+ * @return int Status of the function
+ */
+
+int OutputBuffer::setBufferLine(int l, string ins, string op)
+{
+  // TODO: ADD VALIDATION FOR UPDATED FORMAT
+
+  updateBufferSize(l);
+
+  buffer[l].setInstructionBinary(ins);
+  buffer[l].setOperand(op);
+
+  return 0;
+}
+
+/**
+ * @brief Sets the buffer line l operand to the string provided
+ *
+ * @param l The line to change in the buffer
+ * @param op The operand to set the buffer line to in binary
+ * @return int Status of the function
+ */
+int OutputBuffer::setBufferLineOperand(int l, string op)
+{
+  // TODO: ADD VALIDATION FOR UPDATED FORMAT
+
+  updateBufferSize(l);
+  buffer[l].setOperand(op);
+
+  return 0;
+}
+
+int OutputBuffer::setBufferLineValue(int l, int val)
+{
+  // TODO: ADD VALIDATION FOR UPDATED FORMAT
+
+  updateBufferSize(l);
+  buffer[l].setInstructionValue(val);
+}
+
+int OutputBuffer::setBufferLineName(int l, string name)
+{
+  // TODO: ADD VALIDATION
+
+  updateBufferSize(l);
+  buffer[l].setInstructionName(name);
+}
+/**
+ * @brief Gets the Buffer Line at line l
  *
  * @param l The line to get the machine code of
- * @return string The machine code at line l or 'ERROR' if there is an error
+ * @return BufferLine The line of the Buffer at l
  */
-string OutputBuffer::getBuffer(int l) const
+BufferLine OutputBuffer::getBufferLine(int l) const
 {
-  // Validates that l is a valid line
-  if (l < 0 || l > 32)
-  {
-    return "ERROR";
-  }
+  // TODO: REIMPLEMENT VALIDATION
+  // // Validates that l is a valid line
+  // if (l < 0 || l > 32)
+  // {
+  //   return "ERROR";
+  // }
 
   return buffer[l];
 }
@@ -103,22 +161,44 @@ int OutputBuffer::writeBuffer()
     return -1;
   }
 
-  for (int i = 0; i < 32; i++)
+  for (int i = 0; i < currentSize + 1; i++)
   {
-    writer << buffer[i] << endl;
+    writer << buffer[i].asMachineCode() << endl;
   }
   writer.close();
 
   return 0;
 }
 
-ostream &operator<<(ostream &output, const OutputBuffer &cb)
+/**
+ * @brief Tests to see if the buffer needs to be expanded
+ *
+ * @param l The current line number of the buffer to be updated
+ * @return int Status of the function
+ */
+int OutputBuffer::updateBufferSize(int l)
 {
-  output << "File: " << cb.getFile() << endl;
-  for (int i = 0; i < 32; i++)
+
+  // TODO: IMPLEMENT VERIFICATION AND ERRORS
+  // If the line is larger than the current buffer set the currentbuffer to that line
+  if (l > currentSize)
   {
-    output << i << ":" << cb.getBuffer(i) << endl;
+    cout << "UPDATING BUFFER SIZE FROM: " << currentSize << " TO: " << l << endl;
+    currentSize = l;
   }
 
+  return 0;
+}
+
+ostream &
+operator<<(ostream &output, const OutputBuffer &ob)
+{
+
+  for (int i = 0; i < 32; i++)
+  {
+    BufferLine currentLine = ob.getBufferLine(i);
+    string machineCode = currentLine.asMachineCode();
+    output << i << ":" << machineCode << endl;
+  }
   return output;
 }

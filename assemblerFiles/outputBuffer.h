@@ -18,6 +18,9 @@ using namespace std;
 #include <iostream>
 #include <string>
 #include <fstream>
+
+#include "bufferLine.h"
+#include "utility.h"
 /**
  * ### CLASS DEFINITIONS ###
  */
@@ -31,18 +34,26 @@ class OutputBuffer
 {
 private:
   string outputFile;
-  string buffer[32];
+  BufferLine *buffer;
+  int currentSize;
+
+  int updateBufferSize(int l);
 
 public:
   OutputBuffer();
   OutputBuffer(string f);
 
-  int setBuffer(int l, string mc);
-  string getBuffer(int l) const;
+  int setBufferLine(int l, string cmd);
+  int setBufferLine(int l, string cmd, string op);
+  int setBufferLineOperand(int l, string op);
+  int setBufferLineValue(int l, int val);
+  int setBufferLineName(int l, string name);
+
+  BufferLine getBufferLine(int l) const;
   int setFile(string f);
   string getFile() const;
   int writeBuffer();
 
-  friend ostream &operator<<(ostream &output, const OutputBuffer &cb);
+  friend ostream &operator<<(ostream &output, const OutputBuffer &ob);
 };
 #endif

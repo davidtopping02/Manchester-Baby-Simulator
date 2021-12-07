@@ -20,6 +20,7 @@ using namespace std;
 
 #include <string>
 #include <iostream>
+#include "utility.h"
 
 /**
  * ### CLASS DEFINITIONS ###

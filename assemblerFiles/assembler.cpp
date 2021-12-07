@@ -22,19 +22,14 @@ Assembler::Assembler()
 
 /**
  * @brief Construct a new Assembler Object
- *
- * @param is An instruction set object to initialise the Assembler with
- * @param st A symbol table object to initialise the Assembler with
- * @param ob An output buffer object to initialise the Assembler with
- * @param f A filepath to initialise the Assembler with
+ * @param inF The filepath of the assembly code
+ * @param outF the filepath of the output file
  */
-Assembler::Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f)
+Assembler::Assembler(string inF, string outF)
 {
-  instructionSet = is;
-  symbolTable = st;
-  outputBuffer = ob;
   memoryLocation = 0;
-  inputFile = f;
+  inputFile = inF;
+  outputBuffer.setFile(outF);
 }
 /**
  * @brief Destroy the Assembler object
@@ -101,33 +96,20 @@ int Assembler::setInputFile(string f)
 }
 
 /**
- * @brief Converts an integer into a big-endian binary number
+ * @brief Sets the output file for the program
  *
- * @param n The integer to be converted
- * @return string The big-endian binary representation, "ERROR" means an error occured
+ * @param f The path to the output file
+ * @return int The status of the function
  */
-string Assembler::intToBinary(int n) const
+
+int Assembler::setOutputFile(string f)
 {
-  // Make sure that n can be converted to an integer
-  if (n < 0)
-  {
-    return "ERROR";
-  }
 
-  // Handle 0 edge-case
-  if (n == 0)
-  {
-    return "0";
-  }
-  string result = "";
-  while (n > 0)
-  {
-    result += to_string(n % 2);
-    n = n / 2;
-  }
+  // TODO: Add Verification
 
-  return result;
+  outputBuffer.setFile(f);
 }
+
 /**
  * @brief Categorises words depending on their meaning in the assembler
  *
@@ -175,11 +157,8 @@ int Assembler::start()
 
   // Create a variable to store the current line in the file
   string line;
-  int counter = 0;
   while (getline(reader, line))
   {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
 
     // Create a place to store all of the words on this line
     vector<string> words = {};
@@ -255,21 +234,20 @@ int Assembler::start()
     // If there is an instruction decode the instruction and add it to the outputBuffer
     if (instruction != "")
     {
-      // Make the machine code variable 32 bits
-      for (int i = 0; i < 32; i++)
-      {
-        machineCode += "0";
-      }
       activity = true;
 
       if (instruction == "VAR")
       {
-        // Convert the number to binary
-        machineCode = intToBinary(stoi(operand));
-        // Pad the binary number to 32 bits
-        for (int i = machineCode.length(); i < 32; i++)
+        outputBuffer.setBufferLineName(memoryLocation, "VAR");
+        if (operand != "")
         {
-          machineCode += "0";
+          int intValue = stoi(operand);
+          // TODO: add valid int value verification
+          outputBuffer.setBufferLineValue(memoryLocation, intValue);
+        }
+        else
+        {
+          // TODO: Add no operand verification
         }
       }
 
@@ -284,28 +262,14 @@ int Assembler::start()
           if (symbolLocation == -1)
           {
             string instructionBinary = instructionSet.lookup("JMP");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary);
           }
           else
           {
             string instructionBinary = instructionSet.lookup("JMP");
             string operandBinary = symbolTable.lookup(operand);
 
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
           }
         }
         else
@@ -325,28 +289,14 @@ int Assembler::start()
           if (symbolLocation == -1)
           {
             string instructionBinary = instructionSet.lookup("JRP");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary);
           }
           else
           {
             string instructionBinary = instructionSet.lookup("JRP");
             string operandBinary = symbolTable.lookup(operand);
 
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
           }
         }
         else
@@ -367,27 +317,14 @@ int Assembler::start()
           {
             string instructionBinary = instructionSet.lookup("LDN");
 
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary);
           }
           else
           {
             string instructionBinary = instructionSet.lookup("LDN");
             string operandBinary = symbolTable.lookup(operand);
 
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
           }
         }
         else
@@ -408,27 +345,14 @@ int Assembler::start()
           {
             string instructionBinary = instructionSet.lookup("STO");
 
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary);
           }
           else
           {
             string instructionBinary = instructionSet.lookup("STO");
             string operandBinary = symbolTable.lookup(operand);
 
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
           }
         }
         else
@@ -449,27 +373,14 @@ int Assembler::start()
           {
             string instructionBinary = instructionSet.lookup("SUB");
 
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary);
           }
           else
           {
             string instructionBinary = instructionSet.lookup("SUB");
             string operandBinary = symbolTable.lookup(operand);
 
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
+            outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
           }
         }
         else
@@ -483,10 +394,7 @@ int Assembler::start()
 
         string instructionBinary = instructionSet.lookup("CMP");
 
-        // Update the machine code to show that command
-        machineCode[13] = instructionBinary[0];
-        machineCode[14] = instructionBinary[1];
-        machineCode[15] = instructionBinary[2];
+        outputBuffer.setBufferLine(memoryLocation, instructionBinary);
       }
 
       if (instruction == "STP")
@@ -494,17 +402,12 @@ int Assembler::start()
 
         string instructionBinary = instructionSet.lookup("STP");
 
-        // Update the machine code to show that command
-        machineCode[13] = instructionBinary[0];
-        machineCode[14] = instructionBinary[1];
-        machineCode[15] = instructionBinary[2];
+        outputBuffer.setBufferLine(memoryLocation, instructionBinary);
       }
     }
 
     if (activity)
     {
-      // Set the output buffer
-      outputBuffer.setBuffer(memoryLocation, machineCode);
       memoryLocation++;
     }
   }
@@ -520,9 +423,6 @@ int Assembler::start()
   }
   while (getline(reader2, line))
   {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
-
     // Create a place to store all of the words on this line
     vector<string> words = {};
 
@@ -587,22 +487,12 @@ int Assembler::start()
       // ! Doesn't account for symbol not existing
 
       string operandBinary = symbolTable.lookup(operand);
-
-      machineCode = outputBuffer.getBuffer(memoryLocation);
-
-      // Update the machine code to point to the operand
-      machineCode[0] = operandBinary[0];
-      machineCode[1] = operandBinary[1];
-      machineCode[2] = operandBinary[2];
-      machineCode[3] = operandBinary[3];
-      machineCode[4] = operandBinary[4];
+      outputBuffer.setBufferLineOperand(memoryLocation, operandBinary);
       activity = true;
     }
 
     if (activity)
     {
-      // Set the output buffer
-      outputBuffer.setBuffer(memoryLocation, machineCode);
       memoryLocation++;
     }
   }
