@@ -108,6 +108,8 @@ int Assembler::setOutputFile(string f)
   // TODO: Add Verification
 
   outputBuffer.setFile(f);
+
+  return 0;
 }
 
 /**
