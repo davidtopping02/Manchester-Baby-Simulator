@@ -2,16 +2,16 @@ CC = g++
 CFLAGS = -std=c++17 -Wall -Werror -pedantic -g
 
 # Compiles both the assembler and the simulator
-all: main.o memoryLocations.o menu.o
-	$(CC) $(CFLAGS) -o main main.o memoryLocations.o menu.o
+all: main.o memoryLocations.o menu.o assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
+	$(CC) $(CFLAGS) -o main main.o memoryLocations.o menu.o assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
 
 # Compiles just the simulator
 simulator: main.o memoryLocations.o menu.o
 	$(CC) $(CFLAGS) -o simulator main.o memoryLocations.o menu.o
 
 # Compiles just the assembler
-assembler: assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o
-	$(CC) $(CFLAGS) -o assembler assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o
+assembler: assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
+	$(CC) $(CFLAGS) -o assembler assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
 
 #Cleans the directory
 clean:
@@ -19,8 +19,8 @@ clean:
 	
 # Compiles the Assembler with tests
 
-assembler_test: assembler.o symbol.o symbolTable.o instruction.o instructionSet.o tester.o outputBuffer.o
-	$(CC) $(CFLAGS) -o assemblerTest assembler.o symbol.o symbolTable.o instruction.o instructionSet.o tester.o outputBuffer.o
+assembler_test: assembler.o symbol.o symbolTable.o instruction.o instructionSet.o tester.o outputBuffer.o bufferLine.o utility.o
+	$(CC) $(CFLAGS) -o assemblerTest assembler.o symbol.o symbolTable.o instruction.o instructionSet.o tester.o outputBuffer.o bufferLine.o utility.o
 
 ##### assembler files #####
 
@@ -45,6 +45,11 @@ instructionSet.o: assemblerFiles/instructionSet.cpp assemblerFiles/instructionSe
 outputBuffer.o: assemblerFiles/outputBuffer.cpp assemblerFiles/outputBuffer.h
 	$(CC) -c assemblerFiles/outputBuffer.cpp
 
+bufferLine.o: assemblerFiles/bufferLine.cpp assemblerFiles/bufferLine.h
+	$(CC) -c assemblerFiles/bufferLine.cpp
+
+utility.o: assemblerFiles/utility.cpp assemblerFiles/utility.cpp
+	$(CC) -c assemblerFiles/utility.cpp
 
 ##### simulator files #####
 
