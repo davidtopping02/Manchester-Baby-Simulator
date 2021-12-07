@@ -77,7 +77,7 @@ void readInMachineCode(Store *theStore)
     int storeReg = 0;
 
     // Read from the text file
-    ifstream MyReadFile("BabyTest1-MC.txt");
+    ifstream MyReadFile("manchesterBabyFiles/BabyTest1-MC.txt");
 
     // Use a while loop together with the getline() function to read the file line by line
     while (getline(MyReadFile, line))
@@ -140,7 +140,7 @@ void incrementRegister(Register *CI)
             CI->setLocation(i, 0);
         }
     }
-};
+}
 
 /**
  * @brief this method increments a bitset by one, credit is given for inspiration to this function
@@ -199,7 +199,7 @@ void fetch(Register *CI, Register *PI, Store *theStore)
     {
         PI->setLocation(i, tempPi[i]);
     }
-};
+}
 
 /**
  * @brief wrapper function to decode the operand and the opcode
@@ -678,7 +678,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
             incrementRegister(CI);
         }
     }
-};
+}
 
 /**
  * @brief Helper function prints all the memory locations
