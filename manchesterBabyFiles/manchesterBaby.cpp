@@ -231,7 +231,7 @@ int decodeOperand(Register *PI)
 {
     int operand = 0;
 
-    for (int j = 0; j < 13; j++)
+    for (int j = 0; j < 5; j++)
     {
         // computes MyNum by iterating through the register
         operand += PI->getLocation(j) * pow(2, j);
@@ -470,13 +470,16 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     {
         // temp array holding the register that the operand points to
         bool load[32];
+
         // copying the register to the temp array
         for (int i = 0; i < 32; i++)
         {
             load[i] = theStore->getRegisterLocation((*operand), i);
         }
+
         // temp variable holding the flipped version of the load array
         bool flip[32];
+
         // if the number is negative
         if (load[31] == true)
         {
@@ -513,15 +516,17 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     storeLocation += pow(2, i);
                 }
             }
+
             // negate the value
             storeLocation = -storeLocation;
 
-            // converting the decimal to binary
+            // converting the decimal back to binary
             for (int i = 32; i > -1; i--)
             {
                 int mask = 1u << (32 - 1 - i);
                 flip[i] = (storeLocation & mask) ? 1 : 0;
             }
+
             // reversing the array so that the smallest value is on the left
             int temp;
             int j = 31;
@@ -551,6 +556,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     // Subtract from accumulator
     if (*opcode == "SUB")
     {
+
         // temp array for both copys of accumulator and register
         bool memory[32];
         bool accumulatorArray[32];
@@ -562,10 +568,12 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
         {
             memory[i] = theStore->getRegisterLocation((*operand), i);
         }
+
         for (int i = 0; i < 32; i++)
         {
             accumulatorArray[i] = Accumulator->getLocation(i);
         }
+
         // if the memory array is negative
         if (memory[31] == true)
         {
@@ -591,9 +599,11 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     memoryInt += pow(2, i);
                 }
             }
+
             // add one and negate
             memoryInt = -(memoryInt + 1);
         }
+
         // if the array is positive
         if (memory[31] == false)
         {
@@ -606,6 +616,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                 }
             }
         }
+
         // if the accumulator is negative
         if (accumulatorArray[31] == true)
         {
@@ -623,6 +634,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     flip[i] = 0;
                 }
             }
+
             // get the decimal value
             for (int i = 0; i < 32; i++)
             {
@@ -631,6 +643,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     accumulatorInt += pow(2, i);
                 }
             }
+
             // negate and add one
             accumulatorInt = -(accumulatorInt + 1);
         }
@@ -646,6 +659,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                 }
             }
         }
+
         // subtract the memory from the accumulator
         int newAccumulator = accumulatorInt - memoryInt;
 
@@ -666,6 +680,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
             newAccumulatorArray[i] = newAccumulatorArray[j];
             newAccumulatorArray[j] = temp;
         }
+
         // update the accumulator
         for (int i = 0; i < 32; i++)
         {
