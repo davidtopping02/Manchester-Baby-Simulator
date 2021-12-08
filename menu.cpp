@@ -95,6 +95,10 @@ void menu()
  */
 int main(int argc, char const *argv[])
 {
-    menu();
+    while (1)
+    {
+        menu();
+    }
+
     return 0;
 }

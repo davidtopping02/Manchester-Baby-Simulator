@@ -52,6 +52,14 @@ void manchesterBabySimulator(Store *theStore)
         // 4. Execute.
         execute(&opcode, &operand, &CI, &PI, &Accumulator, theStore);
 
+        // waiting for key pres to continue fetch execute cycle
+        if (iteration != 1)
+        {
+            cout << "\nPress return to run to the next fetch-execute cycle\n"
+                 << endl;
+        }
+        getchar();
+
         // printing all memory locations
         printMemoryLocations(&CI, &PI, &Accumulator, theStore);
 
