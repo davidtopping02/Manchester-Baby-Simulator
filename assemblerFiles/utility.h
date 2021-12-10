@@ -82,4 +82,11 @@ string intToBinary(int n);
  * ## INSTRUCTION ERRORS ###
  */
 
+/**
+ * ### 600-699 ###
+ * ## INSTRUCTION SET ERRORS ###
+ */
+
+#define CANNOT_INSERT_INSTRUCTION 500 // Value returned if the instruction cannot be inserted into the instruction set
+#define INSTRUCTION_NOT_FOUND 501     // Value returned if the instruction cannot be found in the instruction set
 #endif

@@ -36,16 +36,20 @@ InstructionSet::~InstructionSet()
  *
  * @param n The name of the Instruction
  * @param b The binary of the Instruction
- * @return true If the function succeeds in adding the Instruction
- * @return false If the function fails to add the Instruction
+ * @return int The status of the function
  */
-bool InstructionSet::insert(string n, string b)
+int InstructionSet::insert(string n, string b)
 {
 
   // Make sure that a name and binary value are provided
-  if (n == "" || b == "")
+  if (n == "")
   {
-    return false;
+    return INVALID_INSTRUCTION_NAME;
+  }
+
+  if (b.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
   }
 
   try
@@ -58,44 +62,36 @@ bool InstructionSet::insert(string n, string b)
   // if theres an error return false
   catch (const std::exception &e)
   {
-    return false;
+    return CANNOT_INSERT_INSTRUCTION;
   }
 
-  return true;
+  return SUCCESS;
 }
 
 /**
- * @brief Returns the position of a name in the Instruction Set. Returns -1 if there is no name or an error occurs
- *
+ * @brief Returns the position of a name in the Instruction Set.
  * @param n The name of the Instruction to search for
- * @return int The position of the name in the Instruction Set. -1 if an error occurs
+ * @return int The position of the name in the Instruction Set.
  */
 int InstructionSet::search(string n) const
 {
   // Make sure a valid name is passed in
   if (n == "")
   {
-    return -1;
+    return INVALID_INSTRUCTION_NAME;
   }
 
-  try
+  int counter = 0;
+  while (counter < currentSize)
   {
-    int counter = 0;
-    while (counter < currentSize)
+    if (table[counter].getName() == n)
     {
-      if (table[counter].getName() == n)
-      {
-        return counter;
-      }
-      counter++;
+      return counter;
     }
-  }
-  catch (const std::exception &e)
-  {
-    return -1;
+    counter++;
   }
 
-  return -1;
+  return INSTRUCTION_NOT_FOUND;
 }
 
 /**
