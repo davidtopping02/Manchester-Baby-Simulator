@@ -1,7 +1,7 @@
 /**
  * @file memoryLocations.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief register class that has an array representing a 32 bit memory storage
+ * @brief Holds member functions for the Store and registers
  * @version 0.1
  * @date 2021-11-22
  *
@@ -18,7 +18,6 @@ using namespace std;
  */
 Register::Register()
 {
-
     for (int i = 0; i < 32; i++)
     {
         this->setLocation(i, false);
@@ -70,6 +69,30 @@ void Register::setRegister(bool inputRegister[])
 bool Register::getRegister()
 {
     return this->location;
+}
+
+/**
+ * @brief Default constructor for a new Store:: Store object
+ *
+ */
+Store::Store()
+{
+    Register *theStore = new Register[32];
+
+    this->storeRegister = theStore;
+    this->storeSize = 32;
+}
+
+/**
+ * @brief Constructor for a new Store of cardinality 'size':: Store object
+ *
+ */
+Store::Store(int size)
+{
+    Register *theStore = new Register[size];
+
+    this->storeRegister = theStore;
+    this->storeSize = size;
 }
 
 /**
@@ -136,7 +159,7 @@ ostream &operator<<(ostream &output, const Register &reg)
 ostream &operator<<(ostream &output, const Store &St)
 {
 
-    for (int j = 0; j < 32; j++)
+    for (int j = 0; j < St.storeSize; j++)
     {
         for (int i = 0; i < 32; i++)
         {

@@ -59,11 +59,19 @@ string Symbol::getAddress()
  * @brief Sets the address of the symbol
  *
  * @param a The new address of the symbol
+ *
+ * @return int The status of the function
  */
 
-void Symbol::setAddress(string a)
+int Symbol::setAddress(string a)
 {
+  if (a.length() != 5)
+  {
+    return INVALID_ADDRESS_LENGTH;
+  }
+
   address = a;
+  return SUCCESS;
 }
 
 /**
@@ -73,8 +81,8 @@ void Symbol::setAddress(string a)
  * @param s The symbol object to be output
  * @return ostream& The formatted output
  */
-ostream &operator<<(ostream &output, const Symbol &s)
+ostream &operator<<(ostream &output, Symbol &s)
 {
-  output << s.label << ":" << s.address << endl;
+  output << s.getLabel() << ":" << s.getAddress() << endl;
   return output;
 }

@@ -17,24 +17,19 @@
 Assembler::Assembler()
 {
   memoryLocation = 0;
-  inputFile = "assembly.txt";
+  inputFile = "BabyTest1-Assembler.txt";
 }
 
 /**
  * @brief Construct a new Assembler Object
- *
- * @param is An instruction set object to initialise the Assembler with
- * @param st A symbol table object to initialise the Assembler with
- * @param ob An output buffer object to initialise the Assembler with
- * @param f A filepath to initialise the Assembler with
+ * @param inF The filepath of the assembly code
+ * @param outF the filepath of the output file
  */
-Assembler::Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f)
+Assembler::Assembler(string inF, string outF)
 {
-  instructionSet = is;
-  symbolTable = st;
-  outputBuffer = ob;
   memoryLocation = 0;
-  inputFile = f;
+  inputFile = inF;
+  outputBuffer.setFile(outF);
 }
 /**
  * @brief Destroy the Assembler object
@@ -48,7 +43,7 @@ Assembler::~Assembler()
  *
  * @return int The memory location
  */
-int Assembler::getMemoryLocation()
+int Assembler::getMemoryLocation() const
 {
 
   return memoryLocation;
@@ -58,41 +53,930 @@ int Assembler::getMemoryLocation()
  * @brief Set the memory location
  *
  * @param m The value for the new memory location
- * @return int The status of the function -1 represents an error.
+ * @return int The status of the function
  */
 int Assembler::setMemoryLocation(int m)
 {
 
   if (m < 0 || m > 31)
   {
-    return -1;
+    return INVALID_INPUT_PARAMETER;
   }
 
   memoryLocation = m;
 
-  return 0;
+  return SUCCESS;
 }
+
+/**
+ * @brief Returns the input file of the assembler
+ *
+ * @return string The path of the input file
+ */
+string Assembler::getInputFile() const
+{
+
+  return inputFile;
+}
+
 /**
  * @brief Sets the input file for the assembler
  *
  * @param f The path to the input file for the assembler
- * @return int The status of the function, -1 represents an error.
+ * @return int The status of the function
  */
 int Assembler::setInputFile(string f)
 {
+
+  // Create an file stream to validate the new file path
+  ifstream reader(f);
+  if (!reader)
+  {
+    cout << "ERROR: Could not open: " << f << endl;
+    return FILE_NOT_FOUND;
+  }
+
+  inputFile = f;
+  return SUCCESS;
+}
+
+/**
+ * @brief Sets the output file for the program
+ *
+ * @param f The path to the output file
+ * @return int The status of the function
+ */
+
+int Assembler::setOutputFile(string f)
+{
+
   if (f == "")
   {
-    return -1;
+    return FILE_IO_ERROR;
   }
-  inputFile = f;
-  return 0;
+
+  outputBuffer.setFile(f);
+  return SUCCESS;
 }
+
+/**
+ * @brief Categorises words depending on their meaning in the assembler
+ *
+ * @param word The word to be categorised
+ * @return int The category of the word
+ */
+int Assembler::categoriseWord(string word) const
+{
+
+  // if the current word is a comment skip to the next line
+  if (word.find(";") != string::npos)
+  {
+    return COMMENT;
+  }
+
+  // If the final character is a : then it is a label
+  if (word.find(":") == word.length() - 1)
+  {
+    return LABEL;
+  }
+
+  // If the word is in the instruction set or is the word 'VAR'
+  if ((instructionSet.search(word) != INVALID_INSTRUCTION_NAME && instructionSet.search(word) != INSTRUCTION_NOT_FOUND) || word == "VAR")
+  {
+    return INSTRUCTION;
+  }
+
+  return OPERAND;
+}
+
 /**
  * @brief Starts the assembler process
  *
- * @return int The status of the assembler, -1 represents and error
+ * @return int The status of the assembler
  */
 int Assembler::start()
+{
+
+  initialiseInstructionSet();
+
+  cout << "TRYING TO OPEN: " << inputFile << endl;
+  // Create an file stream and validate it
+  ifstream reader(inputFile);
+  if (!reader)
+  {
+    cout << "UNABLE TO OPEN FILE: " << inputFile << endl;
+    return INPUT_FILE_NOT_FOUND;
+  }
+
+  // Variable to store the line number currently being parsed.
+  int lineNumber = 1;
+
+  // Variable to store the status of various functions
+  int status;
+  // Create a variable to store the current line in the file
+  string line;
+
+  cout << endl
+       << "--- FIRST PASS ---" << endl
+       << endl;
+  while (getline(reader, line))
+  {
+
+    status = 0;
+    // Create a place to store all of the words on this line
+    vector<string> words = {};
+
+    // convert the line from a string to char[] for using in strtok()
+    char *charLine = new char[line.length()];
+
+    // Copy the contents of line to charLine
+    strcpy(charLine, line.c_str());
+
+    // Create a substring until the first delimiter
+    char *token = strtok(charLine, " ");
+
+    // Loop while there are still substrings to be made
+    while (token != NULL)
+    {
+      // Add this substring to the list of words
+      words.push_back(token);
+      // Look for the next token
+      token = strtok(NULL, " ");
+    }
+
+    // Variables for storing information about the current line
+    string label = "";
+    string instruction = "";
+    string operand = "";
+
+    // Tracks if there has been activity in the program on this line in the file
+    bool activity = false;
+
+    for (int i = 0; i < (int)words.size(); i++)
+    {
+      string currentWord = words.at(i);
+      cout << lineNumber << ": Attempting to identify: " << currentWord << endl;
+      int category = categoriseWord(currentWord);
+
+      // If it is a comment move on to the next line
+      if (category == COMMENT)
+      {
+        cout << lineNumber << ": Comment Identified" << endl;
+        break;
+      }
+
+      // If it is a label
+      if (category == LABEL)
+      {
+        cout << lineNumber << ": Label Identified" << endl;
+        if (label != "")
+        {
+          cout << lineNumber << ": !ERROR! MULTIPLE LABELS FOUND" << endl;
+          return MULTIPLE_LABELS_FOUND;
+        }
+        label = currentWord.substr(0, currentWord.length() - 1);
+        continue;
+      }
+
+      // If it is an instruction
+      if (category == INSTRUCTION)
+      {
+        cout << lineNumber << ": Instruction Identified" << endl;
+        if (instruction != "")
+        {
+          cout << lineNumber << ": !ERROR! MULTIPLE INSTRUCTIONS FOUND" << endl;
+          return MULTIPLE_INSTRUCTIONS_FOUND;
+        }
+        instruction = currentWord;
+        continue;
+      }
+
+      cout << lineNumber << ": Operand Identified" << endl;
+      if (operand != "")
+      {
+        cout << lineNumber << ": !ERROR! MULTIPLE OPERANDS FOUND" << endl;
+        return MULTIPLE_OPERANDS_FOUND;
+      }
+      // Otherwise it is an operand
+      operand = currentWord;
+    }
+
+    // If there is  label add it to the symbol table
+    if (label != "")
+    {
+
+      cout << lineNumber << ": Generating Memory Location" << endl;
+      string memoryLocationBinary = intToBinary(memoryLocation);
+      cout << lineNumber << ": Memory Location: " << memoryLocationBinary << endl;
+      // Pad the operand to 5 bits
+      for (int i = memoryLocationBinary.length(); i < 5; i++)
+      {
+        memoryLocationBinary += "0";
+      }
+      status = symbolTable.insert(label, memoryLocationBinary);
+      if (status != SUCCESS)
+      {
+        cout << lineNumber << ": !! ERROR !!" << endl;
+
+        if (status == LABEL_ALREADY_EXISTS)
+        {
+          cout << lineNumber << ": Error: Label with Name: " << label << " already exists" << endl;
+        }
+        else if (status == FAILED_TO_INSERT)
+        {
+          cout << lineNumber << ": Error: Failed to insert symbol in to symbol table" << endl;
+        }
+
+        return status;
+      }
+      activity = true;
+    }
+
+    // If there is an instruction decode the instruction and add it to the outputBuffer
+    if (instruction != "")
+    {
+      activity = true;
+
+      if (instruction == "VAR")
+      {
+        status = outputBuffer.setBufferLineName(memoryLocation, "VAR");
+        if (status != SUCCESS)
+        {
+
+          cout << lineNumber << ": !!ERROR !!" << endl;
+
+          if (status == INVALID_MEMORY_LOCATION)
+          {
+            cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+          }
+          else if (status == INVALID_INSTRUCTION_NAME)
+          {
+            cout << lineNumber << ": Error: Invalid Instruction Name" << endl;
+          }
+
+          return status;
+        }
+        if (operand != "")
+        {
+          int intValue = stoi(operand);
+          status = outputBuffer.setBufferLineValue(memoryLocation, intValue);
+          if (status != SUCCESS)
+          {
+            cout << lineNumber << ": !! ERROR !!" << endl;
+            if (status == INVALID_MEMORY_LOCATION)
+            {
+              cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+            }
+            return status;
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "JMP")
+      {
+
+        if (operand != "")
+        {
+          int symbolLocation = symbolTable.search(operand);
+
+          // If the symbol location is an invalid operand
+          if (symbolLocation == INVALID_INPUT_PARAMETER)
+          {
+            cout << lineNumber << ": !! ERROR !! " << endl;
+
+            cout << lineNumber << ": Error: Invalid Label" << endl;
+          }
+          // If the operand is not in the symbol table
+          if (symbolLocation == -1)
+          {
+            string instructionBinary = instructionSet.lookup("JMP");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+            }
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !! ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction Binary" << endl;
+              }
+
+              return status;
+            }
+          }
+          else
+          {
+            string instructionBinary = instructionSet.lookup("JMP");
+
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+
+            string operandBinary = symbolTable.lookup(operand);
+
+            if (operandBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find operand" << endl;
+              return LABEL_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              else if (status == INVALID_OPERAND_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid operand binary" << endl;
+              }
+
+              return status;
+            }
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "JRP")
+      {
+
+        if (operand != "")
+        {
+          int symbolLocation = symbolTable.search(operand);
+
+          // If the symbol location is an invalid operand
+          if (symbolLocation == INVALID_INPUT_PARAMETER)
+          {
+            cout << lineNumber << ": !! ERROR !! " << endl;
+            cout << lineNumber << ": Error: Invalid Label" << endl;
+          }
+
+          // If the operand is not in the symbol table
+          if (symbolLocation == -1)
+          {
+            string instructionBinary = instructionSet.lookup("JRP");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+
+              return status;
+            }
+          }
+          else
+          {
+            string instructionBinary = instructionSet.lookup("JRP");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+
+            string operandBinary = symbolTable.lookup(operand);
+
+            if (operandBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find operand" << endl;
+              return LABEL_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              else if (status == INVALID_OPERAND_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid operand binary" << endl;
+              }
+
+              return status;
+            }
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "LDN")
+      {
+
+        if (operand != "")
+        {
+          int symbolLocation = symbolTable.search(operand);
+          // If the symbol location is an invalid operand
+          if (symbolLocation == INVALID_INPUT_PARAMETER)
+          {
+            cout << lineNumber << ": !! ERROR !! " << endl;
+            cout << lineNumber << ": Error: Invalid Label" << endl;
+            return INVALID_INPUT_PARAMETER;
+          }
+
+          // If the operand is not in the symbol table
+          if (symbolLocation == -1)
+          {
+            string instructionBinary = instructionSet.lookup("LDN");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              return status;
+            }
+          }
+          else
+          {
+            string instructionBinary = instructionSet.lookup("LDN");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+            string operandBinary = symbolTable.lookup(operand);
+            if (operandBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find operand" << endl;
+              return LABEL_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              else if (status == INVALID_OPERAND_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid operand binary" << endl;
+              }
+              return status;
+            }
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "STO")
+      {
+
+        if (operand != "")
+        {
+          int symbolLocation = symbolTable.search(operand);
+          // If the symbol location is an invalid operand
+          if (symbolLocation == INVALID_INPUT_PARAMETER)
+          {
+            cout << lineNumber << ": !! ERROR !! " << endl;
+            cout << lineNumber << ": Error: Invalid Label" << endl;
+            return INVALID_INPUT_PARAMETER;
+          }
+
+          // If the operand is not in the symbol table
+          if (symbolLocation == -1)
+          {
+            string instructionBinary = instructionSet.lookup("STO");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+            }
+          }
+          else
+          {
+            string instructionBinary = instructionSet.lookup("STO");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+            string operandBinary = symbolTable.lookup(operand);
+            if (operandBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find operand" << endl;
+              return LABEL_NOT_FOUND;
+            }
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              else if (status == INVALID_OPERAND_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid operand binary" << endl;
+              }
+            }
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "SUB")
+      {
+
+        if (operand != "")
+        {
+          int symbolLocation = symbolTable.search(operand);
+          if (symbolLocation == INVALID_INPUT_PARAMETER)
+          {
+            cout << lineNumber << ": !! ERROR !! " << endl;
+            cout << lineNumber << ": Error: Invalid Label" << endl;
+            return INVALID_INPUT_PARAMETER;
+          }
+
+          // If the operand is not in the symbol table
+          if (symbolLocation == -1)
+          {
+            string instructionBinary = instructionSet.lookup("SUB");
+
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+            }
+          }
+          else
+          {
+            string instructionBinary = instructionSet.lookup("SUB");
+            if (instructionBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find instruction" << endl;
+              return INSTRUCTION_NOT_FOUND;
+            }
+            string operandBinary = symbolTable.lookup(operand);
+            if (operandBinary == "")
+            {
+              cout << lineNumber << ": !! ERROR !! " << endl;
+              cout << lineNumber << ": Error: Cannot find operand" << endl;
+              return LABEL_NOT_FOUND;
+            }
+            status = outputBuffer.setBufferLine(memoryLocation, instructionBinary, operandBinary);
+            if (status != SUCCESS)
+            {
+
+              cout << lineNumber << ": !!ERROR !!" << endl;
+              if (status == INVALID_MEMORY_LOCATION)
+              {
+                cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+              }
+              else if (status == INVALID_INSTRUCTION_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+              }
+              else if (status == INVALID_OPERAND_BINARY)
+              {
+                cout << lineNumber << ": Error: Invalid operand binary" << endl;
+              }
+            }
+          }
+        }
+        else
+        {
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          cout << lineNumber << ": Error: No Operand Found " << memoryLocation << endl;
+          return NO_OPERAND_FOUND;
+        }
+      }
+
+      if (instruction == "CMP")
+      {
+
+        string instructionBinary = instructionSet.lookup("CMP");
+        if (instructionBinary == "")
+        {
+          cout << lineNumber << ": !! ERROR !! " << endl;
+          cout << lineNumber << ": Error: Cannot find instruction" << endl;
+          return INSTRUCTION_NOT_FOUND;
+        }
+        status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+        if (status != SUCCESS)
+        {
+
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          if (status == INVALID_MEMORY_LOCATION)
+          {
+            cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+          }
+          else if (status == INVALID_INSTRUCTION_BINARY)
+          {
+            cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+          }
+        }
+      }
+
+      if (instruction == "STP")
+      {
+
+        string instructionBinary = instructionSet.lookup("STP");
+        if (instructionBinary == "")
+        {
+          cout << lineNumber << ": !! ERROR !! " << endl;
+          cout << lineNumber << ": Error: Cannot find instruction" << endl;
+          return INSTRUCTION_NOT_FOUND;
+        }
+
+        status = outputBuffer.setBufferLine(memoryLocation, instructionBinary);
+        if (status != SUCCESS)
+        {
+
+          cout << lineNumber << ": !!ERROR !!" << endl;
+          if (status == INVALID_MEMORY_LOCATION)
+          {
+            cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+          }
+          else if (status == INVALID_INSTRUCTION_BINARY)
+          {
+            cout << lineNumber << ": Error: Invalid Instruction binary" << endl;
+          }
+        }
+      }
+    }
+    if (activity)
+    {
+      memoryLocation++;
+    }
+
+    lineNumber++;
+  }
+
+  // Reset the memory location back to the start
+  memoryLocation = 0;
+
+  // Create an new file stream and validate it
+  ifstream reader2(inputFile);
+  if (!reader2)
+  {
+    cout << "ERROR: Could not open: " << inputFile;
+    return INPUT_FILE_NOT_FOUND;
+  }
+
+  cout << endl
+       << "--- SECOND PASS ---" << endl
+       << endl;
+
+  // Reset the line number
+  lineNumber = 0;
+
+  // Reset the function status
+  status = 0;
+
+  while (getline(reader2, line))
+  {
+
+    // Create a place to store all of the words on this line
+    vector<string> words = {};
+
+    // convert the line from a string to char[] for using in strtok()
+    char *charLine = new char[line.length()];
+    // char charLine[line.length()];
+
+    // Copy the contents of line to charLine
+    strcpy(charLine, line.c_str());
+
+    // Create a substring until the first delimiter
+    char *token = strtok(charLine, " ");
+    // Loop while there are still substrings to be made
+    while (token != NULL)
+    {
+      // Add this substring to the list of words
+      words.push_back(token);
+      // Look for the next token
+      token = strtok(NULL, " ");
+    }
+
+    // Variables for storing information about the current line
+    string label = "";
+    string instruction = "";
+    string operand = "";
+
+    // Tracks if there has been activity in the program on this line in the file
+    bool activity = false;
+
+    for (int i = 0; i < (int)words.size(); i++)
+    {
+      string currentWord = words.at(i);
+      cout << lineNumber << ": Attempting to identify: " << currentWord << endl;
+      int category = categoriseWord(currentWord);
+
+      // If it is a comment move on to the next line
+      if (category == COMMENT)
+      {
+        cout << lineNumber << ": Comment Identified" << endl;
+        break;
+      }
+
+      // If it is a label move to the next word
+      if (category == LABEL)
+      {
+        cout << lineNumber << ": Label Identified" << endl;
+        activity = true;
+        continue;
+      }
+
+      // If it is an instruction move to the next word
+      if (category == INSTRUCTION)
+      {
+        cout << lineNumber << ": Instruction Identified" << endl;
+        instruction = currentWord;
+        activity = true;
+        continue;
+      }
+
+      cout << lineNumber << ": Operand Identified" << endl;
+      // Otherwise it is an operand
+      operand = currentWord;
+    }
+
+    if (operand != "" && instruction != "VAR")
+    {
+
+      string operandBinary = symbolTable.lookup(operand);
+      if (operandBinary == "")
+      {
+        cout << lineNumber << ": !! ERROR !!" << endl;
+        cout << lineNumber << ": Operand not declared" << endl;
+        return INVALID_OPERAND_BINARY;
+      }
+
+      status = outputBuffer.setBufferLineOperand(memoryLocation, operandBinary);
+      if (status != SUCCESS)
+      {
+
+        cout << lineNumber << ": !!ERROR !!" << endl;
+
+        if (status == INVALID_MEMORY_LOCATION)
+        {
+          cout << lineNumber << ": Error: Invalid Memory Location " << memoryLocation << endl;
+        }
+        else if (status == INVALID_INSTRUCTION_NAME)
+        {
+          cout << lineNumber << ": Error: Invalid Instruction Name" << endl;
+        }
+
+        return status;
+      }
+      activity = true;
+    }
+    if (activity)
+    {
+      memoryLocation++;
+    }
+
+    lineNumber++;
+  }
+
+  status = outputBuffer.writeBuffer();
+  if (status != SUCCESS)
+  {
+    if (status == FILE_IO_ERROR)
+    {
+      cout << "!! ERROR !!" << endl;
+      cout << "Error: Could not open file" << endl;
+    }
+
+    return status;
+  }
+
+  cout << endl
+       << "--- SUCCESSFULLY ASSEMBLED ---" << endl
+       << endl;
+  return SUCCESS;
+}
+/**
+ * @brief A function to initialse the assemblers instruction set.
+ *
+ * @return int A status code of the function
+ */
+int Assembler::initialiseInstructionSet()
 {
 
   // Insert all the machine code commands
@@ -105,504 +989,5 @@ int Assembler::start()
   instructionSet.insert("CMP", "011");
   instructionSet.insert("STP", "111");
 
-  // Create an file stream and validate it
-  ifstream reader(inputFile);
-  if (!reader)
-  {
-    return -1;
-  }
-
-  // Create a variable to store the current line in the file
-  string line;
-  int counter = 0;
-  while (getline(reader, line))
-  {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
-
-    // Create a place to store all of the words on this line
-    vector<string> words = {};
-
-    // convert the line from a string to char[] for using in strtok()
-    char charLine[line.length()];
-
-    // Copy the contents of line to charLine
-    strcpy(charLine, line.c_str());
-
-    // Create a substring until the first delimiter
-    char *token = strtok(charLine, " ");
-    // Loop while there are still substrings to be made
-    while (token != NULL)
-    {
-      // Add this substring to the list of words
-      words.push_back(token);
-      // Look for the next token
-      token = strtok(NULL, " ");
-    }
-
-    // Variables for storing information about the current line
-    string label = "";
-    string instruction = "";
-    string operand = "";
-
-    // Tracks if there has been activity in the program on this line in the file
-    bool activity = false;
-
-    for (int i = 0; i < words.size(); i++)
-    {
-      string currentWord = words.at(i);
-      int category = categoriseWord(currentWord);
-
-      // If it is a comment move on to the next line
-      if (category == -1)
-      {
-        break;
-      }
-
-      // If it is a label
-      if (category == 0)
-      {
-        label = currentWord.substr(0, currentWord.length() - 1);
-        continue;
-      }
-
-      // If it is an instruction
-      if (category == 1)
-      {
-        instruction = currentWord;
-        continue;
-      }
-
-      // Otherwise it is an operand
-      operand = currentWord;
-    }
-
-    // If there is  label add it to the symbol table
-    // ! Allows user to input same label twice
-    if (label != "")
-    {
-      string memoryLocationBinary = intToBinary(memoryLocation);
-      // Pad the operand to 5 bits
-      for (int i = memoryLocationBinary.length(); i < 5; i++)
-      {
-        memoryLocationBinary += "0";
-      }
-      symbolTable.insert(label, memoryLocationBinary);
-      activity = true;
-    }
-
-    // If there is an instruction decode the instruction and add it to the outputBuffer
-    if (instruction != "")
-    {
-      // Make the machine code variable 32 bits
-      for (int i = 0; i < 32; i++)
-      {
-        machineCode += "0";
-      }
-      activity = true;
-
-      if (instruction == "VAR")
-      {
-        // Convert the number to binary
-        machineCode = intToBinary(stoi(operand));
-        // Pad the binary number to 32 bits
-        for (int i = machineCode.length(); i < 32; i++)
-        {
-          machineCode += "0";
-        }
-      }
-
-      if (instruction == "JMP")
-      {
-
-        if (operand != "")
-        {
-          int symbolLocation = symbolTable.search(operand);
-
-          // If the operand is not in the symbol table
-          if (symbolLocation == -1)
-          {
-            string instructionBinary = instructionSet.lookup("JMP");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-          else
-          {
-            string instructionBinary = instructionSet.lookup("JMP");
-            string operandBinary = symbolTable.lookup(operand);
-
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-        }
-        else
-        {
-          //! Deal with error of no operand
-        }
-      }
-
-      if (instruction == "JRP")
-      {
-
-        if (operand != "")
-        {
-          int symbolLocation = symbolTable.search(operand);
-
-          // If the operand is not in the symbol table
-          if (symbolLocation == -1)
-          {
-            string instructionBinary = instructionSet.lookup("JRP");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-          else
-          {
-            string instructionBinary = instructionSet.lookup("JRP");
-            string operandBinary = symbolTable.lookup(operand);
-
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-        }
-        else
-        {
-          //! Deal with error of no operand
-        }
-      }
-
-      if (instruction == "LDN")
-      {
-
-        if (operand != "")
-        {
-          int symbolLocation = symbolTable.search(operand);
-
-          // If the operand is not in the symbol table
-          if (symbolLocation == -1)
-          {
-            string instructionBinary = instructionSet.lookup("LDN");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-          else
-          {
-            string instructionBinary = instructionSet.lookup("LDN");
-            string operandBinary = symbolTable.lookup(operand);
-
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-        }
-        else
-        {
-          //! Deal with error of no operand
-        }
-      }
-
-      if (instruction == "STO")
-      {
-
-        if (operand != "")
-        {
-          int symbolLocation = symbolTable.search(operand);
-
-          // If the operand is not in the symbol table
-          if (symbolLocation == -1)
-          {
-            string instructionBinary = instructionSet.lookup("STO");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-          else
-          {
-            string instructionBinary = instructionSet.lookup("STO");
-            string operandBinary = symbolTable.lookup(operand);
-
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-        }
-        else
-        {
-          //! Deal with error of no operand
-        }
-      }
-
-      if (instruction == "SUB")
-      {
-
-        if (operand != "")
-        {
-          int symbolLocation = symbolTable.search(operand);
-
-          // If the operand is not in the symbol table
-          if (symbolLocation == -1)
-          {
-            string instructionBinary = instructionSet.lookup("SUB");
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-          else
-          {
-            string instructionBinary = instructionSet.lookup("SUB");
-            string operandBinary = symbolTable.lookup(operand);
-
-            // Update the machine code to point to the operand
-            machineCode[0] = operandBinary[0];
-            machineCode[1] = operandBinary[1];
-            machineCode[2] = operandBinary[2];
-            machineCode[3] = operandBinary[3];
-            machineCode[4] = operandBinary[4];
-
-            // Update the machine code to show that command
-            machineCode[13] = instructionBinary[0];
-            machineCode[14] = instructionBinary[1];
-            machineCode[15] = instructionBinary[2];
-          }
-        }
-        else
-        {
-          //! Deal with error of no operand
-        }
-      }
-
-      if (instruction == "CMP")
-      {
-
-        string instructionBinary = instructionSet.lookup("CMP");
-
-        // Update the machine code to show that command
-        machineCode[13] = instructionBinary[0];
-        machineCode[14] = instructionBinary[1];
-        machineCode[15] = instructionBinary[2];
-      }
-
-      if (instruction == "STP")
-      {
-
-        string instructionBinary = instructionSet.lookup("STP");
-
-        // Update the machine code to show that command
-        machineCode[13] = instructionBinary[0];
-        machineCode[14] = instructionBinary[1];
-        machineCode[15] = instructionBinary[2];
-      }
-    }
-
-    if (activity)
-    {
-      // Set the output buffer
-      outputBuffer.setBuffer(memoryLocation, machineCode);
-      memoryLocation++;
-    }
-  }
-
-  // Reset the memory location back to the start
-  memoryLocation = 0;
-
-  // Create an new file stream and validate it
-  ifstream reader2(inputFile);
-  if (!reader2)
-  {
-    return -1;
-  }
-  while (getline(reader2, line))
-  {
-    // String for the machine code to be pushed to the output buffer
-    string machineCode = "";
-
-    // Create a place to store all of the words on this line
-    vector<string> words = {};
-
-    // convert the line from a string to char[] for using in strtok()
-    char charLine[line.length()];
-
-    // Copy the contents of line to charLine
-    strcpy(charLine, line.c_str());
-
-    // Create a substring until the first delimiter
-    char *token = strtok(charLine, " ");
-    // Loop while there are still substrings to be made
-    while (token != NULL)
-    {
-      // Add this substring to the list of words
-      words.push_back(token);
-      // Look for the next token
-      token = strtok(NULL, " ");
-    }
-
-    // Variables for storing information about the current line
-    string label = "";
-    string instruction = "";
-    string operand = "";
-
-    // Tracks if there has been activity in the program on this line in the file
-    bool activity = false;
-
-    for (int i = 0; i < words.size(); i++)
-    {
-      string currentWord = words.at(i);
-      int category = categoriseWord(currentWord);
-
-      // If it is a comment move on to the next line
-      if (category == -1)
-      {
-        break;
-      }
-
-      // If it is a label move to the next word
-      if (category == 0)
-      {
-        activity = true;
-        continue;
-      }
-
-      // If it is an instruction move to the next word
-      if (category == 1)
-      {
-        instruction = currentWord;
-        activity = true;
-        continue;
-      }
-
-      // Otherwise it is an operand
-      operand = currentWord;
-    }
-
-    if (operand != "" && instruction != "VAR")
-    {
-
-      // ! Doesn't account for symbol not existing
-
-      string operandBinary = symbolTable.lookup(operand);
-
-      machineCode = outputBuffer.getBuffer(memoryLocation);
-
-      // Update the machine code to point to the operand
-      machineCode[0] = operandBinary[0];
-      machineCode[1] = operandBinary[1];
-      machineCode[2] = operandBinary[2];
-      machineCode[3] = operandBinary[3];
-      machineCode[4] = operandBinary[4];
-      activity = true;
-    }
-
-    if (activity)
-    {
-      // Set the output buffer
-      outputBuffer.setBuffer(memoryLocation, machineCode);
-      memoryLocation++;
-    }
-  }
-
-  outputBuffer.writeBuffer();
   return 0;
-}
-
-/**
- * @brief Converts an integer into a big-endian binary number
- *
- * @param n The integer to be converted
- * @return string The big-endian binary representation, "ERROR" means an error occured
- */
-string Assembler::intToBinary(int n)
-{
-  // Make sure that n can be converted to an integer
-  if (n < 0)
-  {
-    return "ERROR";
-  }
-
-  // Handle 0 edge-case
-  if (n == 0)
-  {
-    return "0";
-  }
-  string result = "";
-  while (n > 0)
-  {
-    result += to_string(n % 2);
-    n = n / 2;
-  }
-
-  return result;
-}
-/**
- * @brief Categorises words depending on their meaning in the assembler
- *
- * @param word The word to be categorised
- * @return int The category: -1 = comment, 0 = label, 1 = instruction or VAR, 2 = operand
- */
-int Assembler::categoriseWord(string word)
-{
-  // if the current word is a comment skip to the next line
-  if (word.find(";") != string::npos)
-  {
-    return -1;
-  }
-
-  // If the final character is a : then it is a label
-  if (word.find(":") == word.length() - 1)
-  {
-    return 0;
-  }
-
-  // If the word is in the instruction set or is the word 'VAR'
-  if (instructionSet.search(word) != -1 || word == "VAR")
-  {
-    return 1;
-  }
-
-  return 2;
 }

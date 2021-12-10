@@ -24,6 +24,7 @@
 #include "instructionSet.h"
 #include "symbolTable.h"
 #include "outputBuffer.h"
+#include "utility.h"
 
 /**
  * ### CLASS DEFINITIONS ###
@@ -45,14 +46,18 @@ private:
 
 public:
   Assembler();
-  Assembler(InstructionSet is, SymbolTable st, OutputBuffer ob, string f);
+  Assembler(string inF, string outF);
   ~Assembler();
 
-  int getMemoryLocation();
+  int getMemoryLocation() const;
   int setMemoryLocation(int m);
+  string getInputFile() const;
+
   int setInputFile(string f);
+  int setOutputFile(string f);
+
+  int categoriseWord(string word) const;
   int start();
-  string intToBinary(int n);
-  int categoriseWord(string word);
+  int initialiseInstructionSet();
 };
 #endif

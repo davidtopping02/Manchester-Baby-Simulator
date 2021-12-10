@@ -4,9 +4,9 @@
  * @brief function and class declarations for the symbols in the symbol table
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #ifndef SYMBOL_H
@@ -14,20 +14,21 @@
 
 using namespace std;
 
-/** 
+/**
  * ### INCLUDES ###
  */
 
 #include <string>
 #include <iostream>
+#include "utility.h"
 
 /**
- * ### CLASS DEFINITIONS ### 
+ * ### CLASS DEFINITIONS ###
  */
 
 /**
  * @brief Stores a symbol to be stored in the symbol table
- * 
+ *
  */
 
 class Symbol
@@ -35,13 +36,13 @@ class Symbol
 private:
   /**
    * @brief The label of the symbol
-   * 
+   *
    */
   string label;
 
   /**
    * @brief The address of the symbol
-   * 
+   *
    */
   string address;
 
@@ -52,9 +53,9 @@ public:
   string getLabel();
   string getAddress();
 
-  void setAddress(string a);
+  int setAddress(string a);
 
-  friend ostream &operator<<(ostream &output, const Symbol &s);
+  friend ostream &operator<<(ostream &output, Symbol &s);
 };
 
 #endif

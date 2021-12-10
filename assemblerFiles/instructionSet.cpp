@@ -4,16 +4,16 @@
  * @brief contains the logic for the instruction set
  * @version 0.1
  * @date 2021-11-22
- * 
+ *
  * @copyright Copyright (c) 2021
- * 
+ *
  */
 
 #include "instructionSet.h"
 
 /**
  * @brief Construct a new Instruction Set object
- * 
+ *
  */
 InstructionSet::InstructionSet()
 {
@@ -24,7 +24,7 @@ InstructionSet::InstructionSet()
 
 /**
  * @brief Destroy the Instruction Set object
- * 
+ *
  */
 InstructionSet::~InstructionSet()
 {
@@ -33,19 +33,23 @@ InstructionSet::~InstructionSet()
 
 /**
  * @brief Inserts an Instruction into the Instruction Set
- * 
+ *
  * @param n The name of the Instruction
  * @param b The binary of the Instruction
- * @return true If the function succeeds in adding the Instruction
- * @return false If the function fails to add the Instruction
+ * @return int The status of the function
  */
-bool InstructionSet::insert(string n, string b)
+int InstructionSet::insert(string n, string b)
 {
 
   // Make sure that a name and binary value are provided
-  if (n == "" || b == "")
+  if (n == "")
   {
-    return false;
+    return INVALID_INSTRUCTION_NAME;
+  }
+
+  if (b.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
   }
 
   try
@@ -58,54 +62,46 @@ bool InstructionSet::insert(string n, string b)
   // if theres an error return false
   catch (const std::exception &e)
   {
-    return false;
+    return CANNOT_INSERT_INSTRUCTION;
   }
 
-  return true;
+  return SUCCESS;
 }
 
 /**
- * @brief Returns the position of a name in the Instruction Set. Returns -1 if there is no name or an error occurs
- * 
+ * @brief Returns the position of a name in the Instruction Set.
  * @param n The name of the Instruction to search for
- * @return int The position of the name in the Instruction Set. -1 if an error occurs
+ * @return int The position of the name in the Instruction Set.
  */
-int InstructionSet::search(string n)
+int InstructionSet::search(string n) const
 {
   // Make sure a valid name is passed in
   if (n == "")
   {
-    return -1;
+    return INVALID_INSTRUCTION_NAME;
   }
 
-  try
+  int counter = 0;
+  while (counter < currentSize)
   {
-    int counter = 0;
-    while (counter < currentSize)
+    if (table[counter].getName() == n)
     {
-      if (table[counter].getName() == n)
-      {
-        return counter;
-      }
-      counter++;
+      return counter;
     }
-  }
-  catch (const std::exception &e)
-  {
-    return -1;
+    counter++;
   }
 
-  return -1;
+  return INSTRUCTION_NOT_FOUND;
 }
 
 /**
  * @brief Returns the binary of the Instruction with the given name
- * 
+ *
  * @param n The name of the Instruction to get the binary of
  * @return string The binary of the Instruction
  */
 
-string InstructionSet::lookup(string n)
+string InstructionSet::lookup(string n) const
 {
   // Make sure that the name is valid
   if (n == "")
@@ -120,19 +116,47 @@ string InstructionSet::lookup(string n)
   }
   return table[result].getBinary();
 }
+/**
+ * @brief Returns the table of the instruction set
+ *
+ * @return Instruction* The table of instructions
+ */
+Instruction *InstructionSet::getTable() const
+{
+  return table;
+}
 
 /**
+ * @brief Returns the max size of the instruction set table
+ *
+ * @return int The maximum size of the instruction set table
+ */
+int InstructionSet::getTableSize() const
+{
+  return tablesize;
+}
+
+/**
+ * @brief Returns the current size of the instruction set table
+ *
+ * @return int The current size of the instruction set table
+ */
+int InstructionSet::getCurrentSize() const
+{
+  return currentSize;
+}
+/**
  * @brief Overloads the output operator to display the Instruction Set
- * 
+ *
  * @param output The output stream
  * @param is The Instruction Set
  * @return ostream& The final output
  */
 ostream &operator<<(ostream &output, const InstructionSet &is)
 {
-  for (int i = 0; i < is.tablesize; i++)
+  for (int i = 0; i < is.getTableSize(); i++)
   {
-    output << i << ":" << is.table[i].getName() << ":" << is.table[i].getBinary() << endl;
+    output << i << ":" << is.getTable()[i].getName() << ":" << is.getTable()[i].getBinary() << endl;
   }
   return output;
 }

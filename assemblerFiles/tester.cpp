@@ -432,8 +432,163 @@ void testOutputBuffer()
 void testAssembler()
 {
 
-  Assembler a;
-  a.setInputFile("BabyTest1-Assembler.txt");
+  cout << "---- ASSEMBLER TESTING ----" << endl
+       << endl;
 
-  a.start();
+  cout << "TESTING BLANK CONSTRUCTOR: " << endl;
+  Assembler a;
+  if (a.getInputFile() == "assembly.txt")
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED:" << endl;
+    cout << "FILE INPUT: " << a.getInputFile() << endl;
+  }
+
+  cout << "TESTING GET MEMORY LOCATION: " << endl;
+  if (a.getMemoryLocation() == 0)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED:" << endl;
+    cout << "MEMORY LOCATION: " << a.getMemoryLocation() << endl;
+  }
+
+  cout << "TESTING SET MEMORY LOCATION: " << endl;
+
+  a.setMemoryLocation(5);
+  if (a.getMemoryLocation() == 5)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED:" << endl;
+    cout << "MEMORY LOCATION: " << a.getMemoryLocation() << endl;
+  }
+
+  cout << "TESTING GET INPUT FILE: " << endl;
+  if (a.getInputFile() == "assembly.txt")
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED:" << endl;
+    cout << "INPUT FILE: " << a.getInputFile() << endl;
+  }
+
+  cout << "TESTING SET INPUT FILE: " << endl;
+
+  a.setInputFile("test.txt");
+  if (a.getInputFile() == "test.txt")
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED:" << endl;
+    cout << "INPUT FILE: " << a.getInputFile() << endl;
+  }
+
+  cout << "TESTING BINARY CONVERTER: " << endl;
+
+  // TODO: Add more cases
+  cout << "CASE 1: CONVERTING 1 TO BINARY" << endl;
+  if (a.intToBinary(1) == "1")
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CONVERTING 1 TO BINARY GIVES: " << a.intToBinary(1) << endl;
+  }
+
+  cout << "TESTING WORD CATEGORISATION: " << endl;
+
+  cout << "CASE 1: COMMENT" << endl;
+  if (a.categoriseWord(";comment") == -1)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CATEGORY: " << a.categoriseWord("; This is a comment") << endl;
+  }
+
+  cout << "CASE 2: LABEL" << endl;
+  if (a.categoriseWord("LABEL:") == 0)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CATEGORY: " << a.categoriseWord("LABEL:") << endl;
+  }
+
+  cout << "CASE 3: INSTRUCTION" << endl;
+
+  a.initialiseInstructionSet();
+
+  if (a.categoriseWord("JMP") == 1)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CATEGORY: " << a.categoriseWord("JMP") << endl;
+  }
+
+  cout << "CASE 3.1: VAR" << endl;
+  if (a.categoriseWord("VAR") == 1)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CATEGORY: " << a.categoriseWord("VAR") << endl;
+  }
+
+  cout << "CASE 3.1: OPERAND" << endl;
+  if (a.categoriseWord("VARIABLE") == 2)
+  {
+    cout << "TEST PASSED" << endl;
+  }
+  else
+  {
+    cout << "TEST FAILED: " << endl;
+    cout << "CATEGORY: " << a.categoriseWord("VARIABLE") << endl;
+  }
+
+  cout << "TESTING ASSEMBLER: " << endl;
+
+  cout << "CASE 1: EXAMPLE CODE" << endl;
+  Assembler b;
+  b.setInputFile("BabyTest1-Assembler.txt");
+  b.start();
+
+  cout << "OUTPUT FILE SHOULD BE: " << endl;
+  cout << "00000000000000000000000000000000" << endl;
+  cout << "11100000000000100000000000000000" << endl;
+  cout << "00010000000000010000000000000000" << endl;
+  cout << "10010000000001100000000000000000" << endl;
+  cout << "10010000000000100000000000000000" << endl;
+  cout << "10010000000001100000000000000000" << endl;
+  cout << "00000000000001110000000000000000" << endl;
+  cout << "10000000001000000000000000000000" << endl;
+  cout << "10110110010000000000000000000000" << endl;
+  cout << "00000000000000000000000000000000" << endl;
+
+  cout << "VERIFY OUTPUT" << endl;
+
+  cout << "---- ASSEMBLER TESTING COMPLETE ----" << endl;
 }
