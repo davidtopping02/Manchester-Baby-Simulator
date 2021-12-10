@@ -954,7 +954,21 @@ int Assembler::start()
     lineNumber++;
   }
 
-  outputBuffer.writeBuffer();
+  status = outputBuffer.writeBuffer();
+  if (status != SUCCESS)
+  {
+    if (status == FILE_IO_ERROR)
+    {
+      cout << "!! ERROR !!" << endl;
+      cout << "Error: Could not open file" << endl;
+    }
+
+    return status;
+  }
+
+  cout << endl
+       << "--- SUCCESSFULLY ASSEMBLED ---" << endl
+       << endl;
   return SUCCESS;
 }
 /**
