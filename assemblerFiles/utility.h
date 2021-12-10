@@ -96,4 +96,12 @@ string intToBinary(int n);
  */
 
 #define INVALID_LINE_NUMBER 701 // Value returned if the line number is invalid
+
+/**
+ * ### 800-899 ###
+ * ## SMYBOL ERRORS ###
+ */
+
+#define INVALID_ADDRESS_LENGTH 801 // Value returned if the address length is invalid
+
 #endif
