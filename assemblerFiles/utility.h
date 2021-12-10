@@ -67,4 +67,14 @@ string intToBinary(int n);
 
 #define HASH_NEGATIVE 320 // Value returned if the hash function returns a negative number
 
+/**
+ * ### 400-499 ###
+ * ## BUFFER LINE ERRORS ###
+ */
+
+#define INVALID_INSTRUCTION_BINARY 400 // Value returned if the instruction binary is invalid
+#define INVALID_OPERAND_BINARY 401     // Value returned if the operand binary is invalid
+#define INVALID_INSTRUCTION_NAME 402   // Value returned if the instruction name is invalid
+#define INVALID_INSTRUCTION_VALUE 403  // Value returned if the instruction value is invalid
+
 #endif
