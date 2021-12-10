@@ -54,7 +54,7 @@ public:
   InstructionSet();
   ~InstructionSet();
 
-  bool insert(string n, string b);
+  int insert(string n, string b);
   int search(string n) const;
   string lookup(string n) const;
 

@@ -59,11 +59,19 @@ string Symbol::getAddress()
  * @brief Sets the address of the symbol
  *
  * @param a The new address of the symbol
+ *
+ * @return int The status of the function
  */
 
-void Symbol::setAddress(string a)
+int Symbol::setAddress(string a)
 {
+  if (a.length() != 5)
+  {
+    return INVALID_ADDRESS_LENGTH;
+  }
+
   address = a;
+  return SUCCESS;
 }
 
 /**

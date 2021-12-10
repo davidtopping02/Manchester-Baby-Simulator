@@ -53,7 +53,7 @@ public:
   string getLabel();
   string getAddress();
 
-  void setAddress(string a);
+  int setAddress(string a);
 
   friend ostream &operator<<(ostream &output, Symbol &s);
 };

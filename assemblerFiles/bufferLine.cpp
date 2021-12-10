@@ -77,7 +77,7 @@ int BufferLine::getInstructionValue() const
 {
   return value;
 }
-// TODO: Add status codes
+
 /**
  * @brief Sets the Buffer Line's instruction binary
  *
@@ -86,12 +86,16 @@ int BufferLine::getInstructionValue() const
  */
 int BufferLine::setInstructionBinary(string ins)
 {
+
+  if (ins.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
+  }
   instructionBinary = ins;
 
-  return 0;
+  return SUCCESS;
 }
 
-// TODO: Add status codes
 /**
  * @brief Sets the Buffer Line's operand
  *
@@ -100,9 +104,14 @@ int BufferLine::setInstructionBinary(string ins)
  */
 int BufferLine::setOperand(string op)
 {
+
+  if (op.length() != 5)
+  {
+    return INVALID_OPERAND_BINARY;
+  }
   operand = op;
 
-  return 0;
+  return SUCCESS;
 }
 
 /**
@@ -113,9 +122,13 @@ int BufferLine::setOperand(string op)
  */
 int BufferLine::setInstructionName(string name)
 {
-  instructionName = name;
 
-  return 0;
+  if (name == "")
+  {
+    return INVALID_INSTRUCTION_NAME;
+  }
+  instructionName = name;
+  return SUCCESS;
 }
 
 /**
@@ -126,8 +139,12 @@ int BufferLine::setInstructionName(string name)
  */
 int BufferLine::setInstructionValue(int val)
 {
+  if (val < 0)
+  {
+    return INVALID_INSTRUCTION_VALUE;
+  }
   value = val;
-  return 0;
+  return SUCCESS;
 }
 
 /**

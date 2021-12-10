@@ -46,10 +46,9 @@ SymbolTable::~SymbolTable()
 /**
  * @brief Rehashes the table and updates the stored symbol table
  *
- * @return true If the table rehashed successfully
- * @return false If the table failed to rehash
+ * @return int The status of the function
  */
-bool SymbolTable::reHash()
+int SymbolTable::reHash()
 {
 
   Symbol *tmp = new Symbol[2 * tablesize];
@@ -82,27 +81,27 @@ bool SymbolTable::reHash()
 
     catch (const std::exception &e)
     {
-      return false;
+      return FAILED_TO_REHASH;
     }
   }
   delete[] table;
   table = tmp;
-  return true;
+  return SUCCESS;
 }
 
 /**
- * @brief Hashes the label and returns the position in the Symbol Table. If there is no space in the Symbol Table or an error occurs, it returns -1
+ * @brief Hashes the label and returns the position in the Symbol Table.
  *
  * @param l
- * @return int The position in the Symbol Table or a -1 if an error occurs
+ * @return int The position in the Symbol Table or an error code
  */
 int SymbolTable::hashFunction(string l) const
 {
 
   // Check if a label is passed in
-  if (l.length() == 0)
+  if (l == "")
   {
-    return -1;
+    return INVALID_INPUT_PARAMETER;
   }
 
   // Initialise the numbers to be used for the hash function
@@ -120,13 +119,13 @@ int SymbolTable::hashFunction(string l) const
     /*
         Add to the total with the function of:
         Character @ (Length - i) * p ^ (i)
-        */
+    */
     total += int(l[N - i]) * pow(p, i);
   }
 
   if (total <= 0)
   {
-    return -1;
+    return HASH_NEGATIVE;
   }
 
   // When all of the characters have been added together divide it by T and the result of the hash function is that remainder
@@ -138,25 +137,24 @@ int SymbolTable::hashFunction(string l) const
  *
  * @param l The label of the Symbol
  * @param a The address of the Symbol
- * @return true If the function succeeds in adding the Symbol
- * @return false If the function fails to add the Symbol
+ * @return int The status of the function
  */
-bool SymbolTable::insert(string l, string a)
+int SymbolTable::insert(string l, string a)
 {
 
-  if (l == "")
+  if (l == "" || a == "")
   {
-    return false;
+    return INVALID_INPUT_PARAMETER;
   }
 
   // If the symbol table is too occupied rehash the table
 
   if (currentSize / tablesize > 0.5)
   {
-    bool reHashStatus = reHash();
-    if (!reHashStatus)
+    int reHashStatus = reHash();
+    if (reHashStatus == FAILED_TO_REHASH)
     {
-      return false;
+      return FAILED_TO_REHASH;
     }
   }
   try
@@ -169,38 +167,38 @@ bool SymbolTable::insert(string l, string a)
       // If there is already a node with this label return false
       if (table[(targetPos + i) % tablesize].getLabel() == l)
       {
-        return false;
+        return LABEL_ALREADY_EXISTS;
       }
       // If there is a valid space (empty slot or deleted slot) insert a new Symbol at that location
       if (table[(targetPos + i) % tablesize].getLabel() == "D" || table[(targetPos + i) % tablesize].getLabel() == "")
       {
         table[(targetPos + i) % tablesize] = Symbol(l, a);
         currentSize++;
-        return true;
+        return SUCCESS;
       }
     }
   }
 
   catch (const std::exception &e)
   {
-    return false;
+    return FAILED_TO_INSERT;
   }
 
-  return true;
+  return SUCCESS;
 }
 
 /**
- * @brief Returns the position of a label in the SymbolTable. Returns -1 if there is no label or an error occurs
+ * @brief Returns the position of a label in the SymbolTable.
  *
  * @param l The label of the Symbol to search for
- * @return int The position of the label in the SymbolTable. -1 if an error occurs
+ * @return int The position of the label in the SymbolTable.
  */
 int SymbolTable::search(string l) const
 {
   // Make sure a valid label is passed in
   if (l == "")
   {
-    return -1;
+    return INVALID_INPUT_PARAMETER;
   }
 
   try
@@ -236,24 +234,23 @@ int SymbolTable::search(string l) const
  *
  * @param l The label of the Symbol to update
  * @param a The new address for the Symbol
- * @return true If the function succeeds in updating the address of the Symbol
- * @return false If the function fails to update the address of the Symbol
+ * @return int The status of the function
  */
-bool SymbolTable::update(string l, string a)
+int SymbolTable::update(string l, string a)
 {
   // Make sure the label and address are valid
   if (l == "" || a == "")
   {
-    return false;
+    return INVALID_INPUT_PARAMETER;
   }
 
   const int result = search(l);
-  if (result == -1)
+  if (result == LABEL_NOT_FOUND)
   {
-    return false;
+    return LABEL_NOT_FOUND;
   }
   table[result].setAddress(a);
-  return true;
+  return SUCCESS;
 }
 
 /**

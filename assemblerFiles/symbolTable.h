@@ -56,11 +56,11 @@ public:
   SymbolTable(int size);
   ~SymbolTable();
 
-  bool reHash();
+  int reHash();
   int hashFunction(string l) const;
-  bool insert(string l, string a);
+  int insert(string l, string a);
   int search(string l) const;
-  bool update(string l, string a);
+  int update(string l, string a);
   string lookup(string l) const;
 
   Symbol *getTable() const;
