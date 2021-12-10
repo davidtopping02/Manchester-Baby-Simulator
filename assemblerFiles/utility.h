@@ -21,4 +21,50 @@ using namespace std;
 
 string intToBinary(int n);
 
+/**
+ * ### ERROR CODES ###
+ */
+
+/**
+ * ### 100 - 199 ###
+ * ### GENERAL ERRORS ###
+ */
+
+#define SUCCESS 100                 // Value returned if a function is completed successfully
+#define INVALID_INPUT_PARAMETER 101 // Value returned if an input parameter is invalid
+#define MEMORY_ALLOCATION_ERROR 102 // Value returned if a memory allocation error occurs
+#define INVALID_MENU_OPTION 103     // Value returned if the user selects an invalid menu option
+#define FILE_IO_ERROR 104           // Value returned if a file IO operation failed
+#define FILE_NOT_FOUND 105          // Value returned if a file cannot be found at that location
+
+/**
+ * ### 200-299 ###
+ * ## ASSEMBLER ERRORS ###
+ */
+
+#define COMMENT 200     // Value returned if the word is a comment
+#define LABEL 201       // Value returned if the word is a label
+#define INSTRUCTION 202 // Value returned if the word is an instruction
+#define OPERAND 203     // Value returned if the word is an operand
+
+#define INPUT_FILE_NOT_FOUND 210  // Value returned if the input file is not found
+#define OUTPUT_FILE_NOT_FOUND 211 // Value returned if the output file is not found
+
+#define MULTIPLE_LABELS_FOUND 220       // Value returned if there are multiple labels on a line
+#define MULTIPLE_INSTRUCTIONS_FOUND 221 // Value returned if there are multiple instructions on a line
+#define MULTIPLE_OPERANDS_FOUND 222     // Value returned if there are multiple operands found on a line
+
+/**
+ * ### 300-399 ###
+ * ## SYMBOL TABLE ERRORS ###
+ */
+
+#define LABEL_ALREADY_EXISTS 300 // Value returned if there is already a label in the symbol table
+#define LABEL_NOT_FOUND 301      // Value returned if there is no label in the symbol table
+
+#define FAILED_TO_REHASH 310 // Value returned if the symbol table cannot be rehashed
+#define FAILED_TO_INSERT 311 // Value returned if the symbol table cannot insert that label
+
+#define HASH_NEGATIVE // Value returned if the hash function returns a negative number
+
 #endif
