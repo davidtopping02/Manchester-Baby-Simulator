@@ -87,6 +87,13 @@ string intToBinary(int n);
  * ## INSTRUCTION SET ERRORS ###
  */
 
-#define CANNOT_INSERT_INSTRUCTION 500 // Value returned if the instruction cannot be inserted into the instruction set
-#define INSTRUCTION_NOT_FOUND 501     // Value returned if the instruction cannot be found in the instruction set
+#define CANNOT_INSERT_INSTRUCTION 600 // Value returned if the instruction cannot be inserted into the instruction set
+#define INSTRUCTION_NOT_FOUND 601     // Value returned if the instruction cannot be found in the instruction set
+
+/**
+ * ### 700-799 ###
+ * ## OUTPUT BUFFER ERRORS ###
+ */
+
+#define INVALID_LINE_NUMBER 701 // Value returned if the line number is invalid
 #endif

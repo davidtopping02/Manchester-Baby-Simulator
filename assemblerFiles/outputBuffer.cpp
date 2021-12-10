@@ -42,12 +42,33 @@ OutputBuffer::OutputBuffer(string f)
 int OutputBuffer::setBufferLine(int l, string ins)
 {
 
-  // TODO: ADD VALIDATION FOR UPDATED FORMAT
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return INVALID_LINE_NUMBER;
+  }
 
-  updateBufferSize(l);
-  buffer[l].setInstructionBinary(ins);
+  // Make sure that the instruction binary is 3 characters long
+  if (ins.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
+  }
 
-  return 0;
+  // Update the buffer size (if neccessary)
+  int updateStatus = updateBufferSize(l);
+  if (updateStatus != SUCCESS)
+  {
+    // If the buffer size has not updated succesfully return the error code
+    return updateStatus;
+  }
+
+  int insBinStatus = buffer[l].setInstructionBinary(ins);
+  if (insBinStatus != SUCCESS)
+  {
+    return insBinStatus;
+  }
+
+  return SUCCESS;
 }
 
 /**
@@ -61,14 +82,50 @@ int OutputBuffer::setBufferLine(int l, string ins)
 
 int OutputBuffer::setBufferLine(int l, string ins, string op)
 {
-  // TODO: ADD VALIDATION FOR UPDATED FORMAT
 
-  updateBufferSize(l);
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return INVALID_LINE_NUMBER;
+  }
 
-  buffer[l].setInstructionBinary(ins);
-  buffer[l].setOperand(op);
+  // Make sure that the instruction binary is 3 characters long
+  if (ins.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
+  }
 
-  return 0;
+  // Make sure that the operand binary is 5 characters long
+  if (op.length() != 5)
+  {
+    return INVALID_OPERAND_BINARY;
+  }
+
+  // Update the buffer size (if neccessary)
+  int updateStatus = updateBufferSize(l);
+  if (updateStatus != SUCCESS)
+  {
+    // If the buffer size has not updated succesfully return the error code
+    return updateStatus;
+  }
+
+  // Update the instruction
+  int insBinStatus = buffer[l].setInstructionBinary(ins);
+  if (insBinStatus != SUCCESS)
+  {
+    // If the instruction has not updated successfully return the error code
+    return insBinStatus;
+  }
+
+  // Update the operand
+  int opBinStatus = buffer[l].setOperand(op);
+  if (opBinStatus != SUCCESS)
+  {
+    // If the operand has not updated succesfully return the error code
+    return opBinStatus;
+  }
+
+  return SUCCESS;
 }
 
 /**
@@ -80,32 +137,97 @@ int OutputBuffer::setBufferLine(int l, string ins, string op)
  */
 int OutputBuffer::setBufferLineOperand(int l, string op)
 {
-  // TODO: ADD VALIDATION FOR UPDATED FORMAT
 
-  updateBufferSize(l);
-  buffer[l].setOperand(op);
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return INVALID_LINE_NUMBER;
+  }
 
-  return 0;
+  // Make sure that the operand binary is 5 characters long
+  if (op.length() != 5)
+  {
+    return INVALID_OPERAND_BINARY;
+  }
+
+  // Update the buffer size (if neccessary)
+  int updateStatus = updateBufferSize(l);
+  if (updateStatus != SUCCESS)
+  {
+    // If the buffer size has not updated succesfully return the error code
+    return updateStatus;
+  }
+
+  // Update the operand
+  int opBinStatus = buffer[l].setOperand(op);
+  if (opBinStatus != SUCCESS)
+  {
+    // If the operand has not updated succesfully return the error code
+    return opBinStatus;
+  }
+
+  return SUCCESS;
 }
 
 int OutputBuffer::setBufferLineValue(int l, int val)
 {
-  // TODO: ADD VALIDATION FOR UPDATED FORMAT
 
-  updateBufferSize(l);
-  buffer[l].setInstructionValue(val);
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return INVALID_LINE_NUMBER;
+  }
 
-  return 0;
+  // Make sure that the instruction value is a positive number
+  if (val < 0)
+  {
+    return INVALID_INSTRUCTION_VALUE;
+  }
+
+  // Update the buffer size (if neccessary)
+  int updateStatus = updateBufferSize(l);
+  if (updateStatus != SUCCESS)
+  {
+    // If the buffer size has not updated succesfully return the error code
+    return updateStatus;
+  }
+
+  // Update the instruction value
+  int insValStatus = buffer[l].setInstructionValue(val);
+  if (insValStatus != SUCCESS)
+  {
+    // If the instruction value has not updated successfully return the error code
+    return insValStatus;
+  }
+
+  return SUCCESS;
 }
 
 int OutputBuffer::setBufferLineName(int l, string name)
 {
-  // TODO: ADD VALIDATION
 
-  updateBufferSize(l);
-  buffer[l].setInstructionName(name);
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return INVALID_LINE_NUMBER;
+  }
+  // Update the buffer size (if neccessary)
+  int updateStatus = updateBufferSize(l);
+  if (updateStatus != SUCCESS)
+  {
+    // If the buffer size has not updated succesfully return the error code
+    return updateStatus;
+  }
 
-  return 0;
+  // Update the instruction name
+  int insNameStatus = buffer[l].setInstructionName(name);
+  if (insNameStatus != SUCCESS)
+  {
+    // If the instruction name has not updated successfully return the error code
+    return insNameStatus;
+  }
+
+  return SUCCESS;
 }
 /**
  * @brief Gets the Buffer Line at line l
@@ -115,12 +237,12 @@ int OutputBuffer::setBufferLineName(int l, string name)
  */
 BufferLine OutputBuffer::getBufferLine(int l) const
 {
-  // TODO: REIMPLEMENT VALIDATION
-  // // Validates that l is a valid line
-  // if (l < 0 || l > 32)
-  // {
-  //   return "ERROR";
-  // }
+
+  // Make sure that the line number is a positive number and not greater than 32
+  if (l < 0 || l > 32)
+  {
+    return;
+  }
 
   return buffer[l];
 }
@@ -132,14 +254,15 @@ BufferLine OutputBuffer::getBufferLine(int l) const
  */
 int OutputBuffer::setFile(string f)
 {
+
   // Validate that f is a string that could lead to a file
   if (f == "")
   {
-    return -1;
+    return FILE_NOT_FOUND;
   }
 
   outputFile = f;
-  return 0;
+  return SUCCESS;
 }
 /**
  * @brief Gets the output file for the code buffer
@@ -148,21 +271,20 @@ int OutputBuffer::setFile(string f)
  */
 string OutputBuffer::getFile() const
 {
-
   return outputFile;
 }
 
 /**
  * @brief Writes the output buffer to the output file
  *
- * @return int Status of the function, -1 means an error
+ * @return int Status of the function
  */
 int OutputBuffer::writeBuffer()
 {
   ofstream writer(outputFile);
   if (!writer)
   {
-    return -1;
+    return FILE_IO_ERROR;
   }
 
   for (int i = 0; i < currentSize + 1; i++)
@@ -171,7 +293,7 @@ int OutputBuffer::writeBuffer()
   }
   writer.close();
 
-  return 0;
+  return SUCCESS;
 }
 
 /**
@@ -183,15 +305,18 @@ int OutputBuffer::writeBuffer()
 int OutputBuffer::updateBufferSize(int l)
 {
 
-  // TODO: IMPLEMENT VERIFICATION AND ERRORS
+  if (l < 0)
+  {
+    return INVALID_LINE_NUMBER;
+  }
+
   // If the line is larger than the current buffer set the currentbuffer to that line
   if (l > currentSize)
   {
-    cout << "UPDATING BUFFER SIZE FROM: " << currentSize << " TO: " << l << endl;
     currentSize = l;
   }
 
-  return 0;
+  return SUCCESS;
 }
 
 ostream &
