@@ -1,7 +1,7 @@
 /**
  * @file menu.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief This file holds the user menu for the manchester baby
+ * @brief This file holds the user menu and main function for the manchester baby simulator
  * @version 0.1
  * @date 2021-11-29
  *
@@ -126,6 +126,10 @@ void menu()
  */
 int main(int argc, char const *argv[])
 {
-    menu();
+    while (1)
+    {
+        menu();
+    }
+
     return 0;
 }

@@ -7,8 +7,10 @@ complete:
 	g++ -std=c++17 -Wall -Werror -pedantic -g -o main menu.cpp assemblerFiles/assembler.cpp assemblerFiles/bufferLine.cpp assemblerFiles/instruction.cpp assemblerFiles/instructionSet.cpp assemblerFiles/outputBuffer.cpp assemblerFiles/symbol.cpp assemblerFiles/symbolTable.cpp assemblerFiles/utility.cpp manchesterBabyFiles/manchesterBaby.cpp manchesterBabyFiles/memoryLocations.cpp
 
 # Compiles both the assembler and the simulator
+
 all: menu.o manchesterBaby.o memoryLocations.o assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
 	$(CC) $(CFLAGS) -o main menu.o manchesterBaby.o memoryLocations.o  assembler.o symbol.o symbolTable.o instruction.o instructionSet.o outputBuffer.o bufferLine.o utility.o
+
 
 # Compiles just the simulator
 simulator: manchesterBaby.o memoryLocations.o
@@ -56,6 +58,8 @@ bufferLine.o: assemblerFiles/bufferLine.cpp assemblerFiles/bufferLine.h
 utility.o: assemblerFiles/utility.cpp assemblerFiles/utility.cpp
 	$(CC) -c -g assemblerFiles/utility.cpp
 
+
+
 ##### simulator files #####
 
 manchesterBaby.o: manchesterBabyFiles/manchesterBaby.cpp manchesterBabyFiles/manchesterBaby.h manchesterBabyFiles/memoryLocations.h
@@ -66,4 +70,5 @@ memoryLocations.o: manchesterBabyFiles/memoryLocations.cpp manchesterBabyFiles/m
 
 menu.o: menu.cpp manchesterBabyFiles/manchesterBaby.h manchesterBabyFiles/memoryLocations.h
 	$(CC) -c -g menu.cpp
+
 

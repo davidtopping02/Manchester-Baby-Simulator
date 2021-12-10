@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief file with main function and other relevant functions
+ * @brief Contains all the functions for the manchester baby's fetch-execute cycle
  * @version 0.1
  * @date 2021-11-22
  *
@@ -52,10 +52,16 @@ void manchesterBabySimulator(Store *theStore)
         // 4. Execute.
         execute(&opcode, &operand, &CI, &PI, &Accumulator, theStore);
 
-        // printing all memory locations
+        // waiting for key pres to continue fetch execute cycle
+        if (iteration != 1)
+        {
+            cout << "\nPress return to run to the next fetch-execute cycle\n"
+                 << endl;
+        }
+        getchar();
+
         printMemoryLocations(&CI, &PI, &Accumulator, theStore);
 
-        // halting if the opcode is STP
         if (opcode == "STP")
         {
             finished = true;
@@ -72,14 +78,14 @@ void manchesterBabySimulator(Store *theStore)
  */
 void readInMachineCode(Store *theStore)
 {
-    // Create a text string, which is used to get each line
+
     string line;
     int storeReg = 0;
 
     // Read from the text file
     ifstream MyReadFile("manchesterBabyFiles/BabyTest1-MC.txt");
 
-    // Use a while loop together with the getline() function to read the file line by line
+    // Read the file line by line and store in the store
     while (getline(MyReadFile, line))
     {
         for (int i = 0; i < 32; i++)
@@ -97,7 +103,6 @@ void readInMachineCode(Store *theStore)
         storeReg++;
     }
 
-    // Close the file
     MyReadFile.close();
 }
 
@@ -108,7 +113,7 @@ void readInMachineCode(Store *theStore)
  */
 void incrementRegister(Register *CI)
 {
-    // creating bitset from CI register
+    // init temp bitset
     bitset<32> ciBitset;
 
     // copying the CI register into the bitset
@@ -223,7 +228,7 @@ int decodeOperand(Register *PI)
 {
     int operand = 0;
 
-    for (int j = 0; j < 13; j++)
+    for (int j = 0; j < 5; j++)
     {
         // computes MyNum by iterating through the register
         operand += PI->getLocation(j) * pow(2, j);
@@ -462,13 +467,16 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     {
         // temp array holding the register that the operand points to
         bool load[32];
+
         // copying the register to the temp array
         for (int i = 0; i < 32; i++)
         {
             load[i] = theStore->getRegisterLocation((*operand), i);
         }
+
         // temp variable holding the flipped version of the load array
         bool flip[32];
+
         // if the number is negative
         if (load[31] == true)
         {
@@ -505,15 +513,17 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     storeLocation += pow(2, i);
                 }
             }
+
             // negate the value
             storeLocation = -storeLocation;
 
-            // converting the decimal to binary
+            // converting the decimal back to binary
             for (int i = 32; i > -1; i--)
             {
                 int mask = 1u << (32 - 1 - i);
                 flip[i] = (storeLocation & mask) ? 1 : 0;
             }
+
             // reversing the array so that the smallest value is on the left
             int temp;
             int j = 31;
@@ -543,6 +553,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
     // Subtract from accumulator
     if (*opcode == "SUB")
     {
+
         // temp array for both copys of accumulator and register
         bool memory[32];
         bool accumulatorArray[32];
@@ -554,10 +565,12 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
         {
             memory[i] = theStore->getRegisterLocation((*operand), i);
         }
+
         for (int i = 0; i < 32; i++)
         {
             accumulatorArray[i] = Accumulator->getLocation(i);
         }
+
         // if the memory array is negative
         if (memory[31] == true)
         {
@@ -583,9 +596,11 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     memoryInt += pow(2, i);
                 }
             }
+
             // add one and negate
             memoryInt = -(memoryInt + 1);
         }
+
         // if the array is positive
         if (memory[31] == false)
         {
@@ -598,6 +613,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                 }
             }
         }
+
         // if the accumulator is negative
         if (accumulatorArray[31] == true)
         {
@@ -615,6 +631,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     flip[i] = 0;
                 }
             }
+
             // get the decimal value
             for (int i = 0; i < 32; i++)
             {
@@ -623,6 +640,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                     accumulatorInt += pow(2, i);
                 }
             }
+
             // negate and add one
             accumulatorInt = -(accumulatorInt + 1);
         }
@@ -638,6 +656,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
                 }
             }
         }
+
         // subtract the memory from the accumulator
         int newAccumulator = accumulatorInt - memoryInt;
 
@@ -658,6 +677,7 @@ void execute(string *opcode, int *operand, Register *CI, Register *PI, Register 
             newAccumulatorArray[i] = newAccumulatorArray[j];
             newAccumulatorArray[j] = temp;
         }
+
         // update the accumulator
         for (int i = 0; i < 32; i++)
         {
