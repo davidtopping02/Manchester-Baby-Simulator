@@ -166,7 +166,9 @@ int Assembler::start()
     vector<string> words = {};
 
     // convert the line from a string to char[] for using in strtok()
-    char charLine[line.length()];
+
+    char *charLine = new char[line.length()];
+    // char charLine[line.length()];
 
     // Copy the contents of line to charLine
     strcpy(charLine, line.c_str());
@@ -190,7 +192,7 @@ int Assembler::start()
     // Tracks if there has been activity in the program on this line in the file
     bool activity = false;
 
-    for (int i = 0; i < words.size(); i++)
+    for (int i = 0; i < (int) words.size(); i++)
     {
       string currentWord = words.at(i);
       int category = categoriseWord(currentWord);
@@ -429,7 +431,8 @@ int Assembler::start()
     vector<string> words = {};
 
     // convert the line from a string to char[] for using in strtok()
-    char charLine[line.length()];
+    char *charLine = new char[line.length()];
+    // char charLine[line.length()];
 
     // Copy the contents of line to charLine
     strcpy(charLine, line.c_str());
@@ -453,7 +456,7 @@ int Assembler::start()
     // Tracks if there has been activity in the program on this line in the file
     bool activity = false;
 
-    for (int i = 0; i < words.size(); i++)
+    for (int i = 0; i < (int)words.size(); i++)
     {
       string currentWord = words.at(i);
       int category = categoriseWord(currentWord);
