@@ -1,7 +1,7 @@
 /**
  * @file main.cpp
  * @author David Topping, Christian Zlatanov, Mathew Gallahcher
- * @brief file with main function and other relevant functions
+ * @brief Contains all the functions for the manchester baby's fetch-execute cycle
  * @version 0.1
  * @date 2021-11-22
  *
@@ -60,10 +60,8 @@ void manchesterBabySimulator(Store *theStore)
         }
         getchar();
 
-        // printing all memory locations
         printMemoryLocations(&CI, &PI, &Accumulator, theStore);
 
-        // halting if the opcode is STP
         if (opcode == "STP")
         {
             finished = true;
@@ -80,14 +78,14 @@ void manchesterBabySimulator(Store *theStore)
  */
 void readInMachineCode(Store *theStore)
 {
-    // Create a text string, which is used to get each line
+
     string line;
     int storeReg = 0;
 
     // Read from the text file
     ifstream MyReadFile("manchesterBabyFiles/BabyTest1-MC.txt");
 
-    // Use a while loop together with the getline() function to read the file line by line
+    // Read the file line by line and store in the store
     while (getline(MyReadFile, line))
     {
         for (int i = 0; i < 32; i++)
@@ -105,7 +103,6 @@ void readInMachineCode(Store *theStore)
         storeReg++;
     }
 
-    // Close the file
     MyReadFile.close();
 }
 
@@ -116,7 +113,7 @@ void readInMachineCode(Store *theStore)
  */
 void incrementRegister(Register *CI)
 {
-    // creating bitset from CI register
+    // init temp bitset
     bitset<32> ciBitset;
 
     // copying the CI register into the bitset
