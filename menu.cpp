@@ -30,7 +30,6 @@ void menu()
 
     while (true)
     {
-
         // menu choices
         cout << "Please select from one of the following options" << endl;
 

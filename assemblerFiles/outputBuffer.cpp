@@ -45,7 +45,7 @@ int OutputBuffer::setBufferLine(int l, string ins)
   // Make sure that the line number is a positive number and not greater than 32
   if (l < 0 || l > 32)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
 
   // Make sure that the instruction binary is 3 characters long
@@ -86,7 +86,7 @@ int OutputBuffer::setBufferLine(int l, string ins, string op)
   // Make sure that the line number is a positive number and not greater than 32
   if (l < 0 || l > 32)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
 
   // Make sure that the instruction binary is 3 characters long
@@ -141,7 +141,7 @@ int OutputBuffer::setBufferLineOperand(int l, string op)
   // Make sure that the line number is a positive number and not greater than 32
   if (l < 0 || l > 32)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
 
   // Make sure that the operand binary is 5 characters long
@@ -175,7 +175,7 @@ int OutputBuffer::setBufferLineValue(int l, int val)
   // Make sure that the line number is a positive number and not greater than 32
   if (l < 0 || l > 32)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
 
   // Make sure that the instruction value is a positive number
@@ -209,7 +209,7 @@ int OutputBuffer::setBufferLineName(int l, string name)
   // Make sure that the line number is a positive number and not greater than 32
   if (l < 0 || l > 32)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
   // Update the buffer size (if neccessary)
   int updateStatus = updateBufferSize(l);
@@ -237,12 +237,6 @@ int OutputBuffer::setBufferLineName(int l, string name)
  */
 BufferLine OutputBuffer::getBufferLine(int l) const
 {
-
-  // Make sure that the line number is a positive number and not greater than 32
-  if (l < 0 || l > 32)
-  {
-    return;
-  }
 
   return buffer[l];
 }
@@ -307,7 +301,7 @@ int OutputBuffer::updateBufferSize(int l)
 
   if (l < 0)
   {
-    return INVALID_LINE_NUMBER;
+    return INVALID_MEMORY_LOCATION;
   }
 
   // If the line is larger than the current buffer set the currentbuffer to that line

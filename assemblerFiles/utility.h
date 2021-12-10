@@ -54,6 +54,8 @@ string intToBinary(int n);
 #define MULTIPLE_INSTRUCTIONS_FOUND 221 // Value returned if there are multiple instructions on a line
 #define MULTIPLE_OPERANDS_FOUND 222     // Value returned if there are multiple operands found on a line
 
+#define NO_OPERAND_FOUND 230 // Value returned if there is no operand found and an operand is required
+
 /**
  * ### 300-399 ###
  * ## SYMBOL TABLE ERRORS ###
@@ -90,12 +92,13 @@ string intToBinary(int n);
 #define CANNOT_INSERT_INSTRUCTION 600 // Value returned if the instruction cannot be inserted into the instruction set
 #define INSTRUCTION_NOT_FOUND 601     // Value returned if the instruction cannot be found in the instruction set
 
+
 /**
  * ### 700-799 ###
  * ## OUTPUT BUFFER ERRORS ###
  */
 
-#define INVALID_LINE_NUMBER 701 // Value returned if the line number is invalid
+#define INVALID_MEMORY_LOCATION 701 // Value returned if the line number is invalid
 
 /**
  * ### 800-899 ###
