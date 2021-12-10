@@ -65,6 +65,6 @@ string intToBinary(int n);
 #define FAILED_TO_REHASH 310 // Value returned if the symbol table cannot be rehashed
 #define FAILED_TO_INSERT 311 // Value returned if the symbol table cannot insert that label
 
-#define HASH_NEGATIVE // Value returned if the hash function returns a negative number
+#define HASH_NEGATIVE 320 // Value returned if the hash function returns a negative number
 
 #endif
