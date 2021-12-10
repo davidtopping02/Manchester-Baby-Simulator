@@ -54,7 +54,7 @@ public:
   string getName() const;
   string getBinary() const;
 
-  void setBinary(string b);
+  int setBinary(string b);
 
   friend ostream &operator<<(ostream &output, const Instruction &i);
 };

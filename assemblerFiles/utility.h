@@ -77,4 +77,9 @@ string intToBinary(int n);
 #define INVALID_INSTRUCTION_NAME 402   // Value returned if the instruction name is invalid
 #define INVALID_INSTRUCTION_VALUE 403  // Value returned if the instruction value is invalid
 
+/**
+ * ### 500-599 ###
+ * ## INSTRUCTION ERRORS ###
+ */
+
 #endif

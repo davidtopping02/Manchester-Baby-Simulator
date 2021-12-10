@@ -40,7 +40,7 @@ Instruction::Instruction(string n, string b)
  * @return string The name of the instruction
  */
 
- string Instruction::getName() const
+string Instruction::getName() const
 {
   return name;
 }
@@ -60,11 +60,18 @@ string Instruction::getBinary() const
  * @brief Sets the binary of the Instruction
  *
  * @param b The new binary of the Instruction
+ * @return int The status of the function
  */
 
-void Instruction::setBinary(string b)
+int Instruction::setBinary(string b)
 {
+  if (b.length() != 3)
+  {
+    return INVALID_INSTRUCTION_BINARY;
+  }
   binary = b;
+
+  return SUCCESS;
 }
 
 /**
