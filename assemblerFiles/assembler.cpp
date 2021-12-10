@@ -17,7 +17,7 @@
 Assembler::Assembler()
 {
   memoryLocation = 0;
-  inputFile = "assembly.txt";
+  inputFile = "BabyTest1-Assembler.txt";
 }
 
 /**
@@ -192,7 +192,7 @@ int Assembler::start()
     // Tracks if there has been activity in the program on this line in the file
     bool activity = false;
 
-    for (int i = 0; i < (int) words.size(); i++)
+    for (int i = 0; i < (int)words.size(); i++)
     {
       string currentWord = words.at(i);
       int category = categoriseWord(currentWord);
